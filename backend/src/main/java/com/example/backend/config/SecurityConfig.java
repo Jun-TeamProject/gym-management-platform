@@ -49,11 +49,16 @@ public class SecurityConfig {
                                         "/api/images/**",
                                         "/oauth2/**",
                                         "/login/oauth2/**",
+                                        "/h2-console/**",
                                         "/error"
                                 ).permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN")
                                 .anyRequest().authenticated()
+                )
+                .headers(headers -> headers
+                                .frameOptions(frameOptions -> frameOptions.sameOrigin()) // 같은 출처(origin)에서의 프레임 허용
+                        // 또는 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
 //                .oauth2Login(oauth2 -> oauth2
 //                        .successHandler(oAuth2SuccessHandler)
