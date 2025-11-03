@@ -1,11 +1,14 @@
 import useAuthStore from "../stores/authStore";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 
 function LoginPage() {
   const { login, loading, error} = useAuthStore();
-
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    // email: "", email or username = loginId
+    loginId: "",
     password: "",
   });
 
@@ -19,7 +22,8 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      const result = await login(formData);
+      await login(formData);
+        Navigate("/");
     }catch(err){
       console.error("login error caught in LoginPage: ", err);
     }
@@ -33,11 +37,11 @@ function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <input
-          type="email"
-          name="email"
-          value={formData.email}
+          type="text"
+          name="loginId"
+          value={formData.loginId}
           onChange={handleChange}
-          placeholder="이메일 입력" required />
+          placeholder="이메일or유저네임 입력" required />
           <input
           type="password"
           name="password"

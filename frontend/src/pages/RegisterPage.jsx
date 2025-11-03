@@ -1,16 +1,17 @@
 import {useState} from "react";
 import useAuthStore from "../stores/authStore";
+import { useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
     const {register, loading, error} = useAuthStore();
-
+    const Navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        name: "",
-        phone: "",
-        role: "",
-        branch_id: "",
+        username: "",
+        // phone: "",
+        // role: "",
+        // branch_id: "",
     });
 
     const handleChange = (e) => {
@@ -51,13 +52,13 @@ function RegisterPage() {
                         />
                         <input
                         type="text"
-                        name="name"
-                        value={formData.name}
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         placeholder="이름 입력"
                         required />
 
-                        <input
+                        {/* <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
@@ -84,7 +85,7 @@ function RegisterPage() {
                         <option value="1">MEMBER</option>
                         <option value="2">TRANINER</option>
                         <option value="3">ADMIN</option>
-                        </select>
+                        </select> */}
 
                         <button 
                         type="submit"
