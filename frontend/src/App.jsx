@@ -13,8 +13,7 @@ const App = () => {
         <Route path="/myprofile" element={<MyProfile />} />
       </Routes>
     </BrowserRouter>
-  )
-  
+  );
 };
 
 export default App;
