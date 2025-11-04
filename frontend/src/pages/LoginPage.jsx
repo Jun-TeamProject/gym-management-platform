@@ -110,7 +110,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 하단 안내 */}
         <p className="text-center text-xs text-gray-500 mt-4">
           계정이 없으신가요?{" "}
           <Link to="/register" className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline">
