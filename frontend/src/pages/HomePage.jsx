@@ -4,7 +4,7 @@ import Button from '../component/attendanceButton'
 
 function HomePage() {
     return(
-        <div className="flex flex-col items-center justify-self-auto min-h-screen">
+        <div className="">
             <div>
             {/* <h1>Homepage</h1>
             <a href="/login">login</a><br></br>
