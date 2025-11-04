@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    // private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final UserDetailsService userDetailsService;
 
     @Value("${frontend.url}")
@@ -60,9 +60,9 @@ public class SecurityConfig {
                                 .frameOptions(frameOptions -> frameOptions.sameOrigin()) // 같은 출처(origin)에서의 프레임 허용
                         // 또는 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
-//                .oauth2Login(oauth2 -> oauth2
-//                        .successHandler(oAuth2SuccessHandler)
-//                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
