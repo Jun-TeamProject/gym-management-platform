@@ -54,6 +54,9 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// 임시 DB H2 추가
+	runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
