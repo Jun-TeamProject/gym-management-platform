@@ -1,4 +1,4 @@
-package com.example.backend.membership.dto;
+package com.example.backend.payment.dto;
 
 import com.example.backend.payment.entity.Payment;
 import lombok.Builder;

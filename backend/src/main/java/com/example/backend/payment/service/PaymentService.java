@@ -1,10 +1,15 @@
-package com.example.backend.membership.service;
+package com.example.backend.payment.service;
 
+import com.example.backend.global.config.TossPaymentConfig;
+import com.example.backend.membership.repository.MembershipRepository;
+import com.example.backend.payment.client.TossPaymentsApiClient;
 import com.example.backend.payment.dto.PaymentConfirmRequest;
 import com.example.backend.payment.dto.PaymentPrepareRequest;
 import com.example.backend.payment.dto.PaymentPrepareResponse;
 import com.example.backend.membership.entity.Membership;
+import com.example.backend.payment.dto.TossPaymentResponse;
 import com.example.backend.payment.entity.Payment;
+import com.example.backend.payment.repository.PaymentRepository;
 import com.example.backend.product.entity.Product;
 import com.example.backend.product.repository.ProductRepository;
 import com.example.backend.user.entity.User;
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 @Transactional

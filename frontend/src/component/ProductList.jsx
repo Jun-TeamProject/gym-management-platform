@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { ProductApi } from "../services/ProductApi";
 import ProductForm from "./ProductForm";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/authStore";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  const navigate = useNavigate();
+  const { user } = useAuthStore(); // 로그인한 사용자 정보
 
   const fetchProducts = async () => {
     try {
@@ -26,11 +31,11 @@ const ProductList = () => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (productId) => {
     if (!window.confirm("정말로 이 상품을 삭제하시겠습니까? ")) return;
     //ToDo 구매한 이력이 있는 상품 삭제 불가능 또는 변경 처리 작업 추가
     try {
-      await ProductApi.deleteProduct(id);
+      await ProductApi.deleteProduct(productId);
       alert("상품이 삭제되었습니다.");
       fetchProducts();
     } catch (error) {
@@ -45,17 +50,23 @@ const ProductList = () => {
     fetchProducts();
   };
 
+  const handlePurchase = (productId) => {
+    navigate(`/checkout/${productId}`);
+  };
+
   return (
     <div className="product-management">
       <h2> 상품 관리 (ADMIN)</h2>
-      <button
-        onClick={() => {
-          setEditingProduct(null);
-          setIsFormOpen(true);
-        }}
-      >
-        + 새 상품 등록
-      </button>
+      {user?.role === "ADMIN" && ( // ADMIN 일 떄만 등록 버튼 보임
+        <button
+          onClick={() => {
+            setEditingProduct(null);
+            setIsFormOpen(true);
+          }}
+        >
+          + 새 상품 등록
+        </button>
+      )}
 
       {isFormOpen && (
         <ProductForm
@@ -78,15 +89,25 @@ const ProductList = () => {
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.type === "선택" ? "MEMBERSHIP" : "PT 이용권"}</td>
+            <tr key={product.ProductId}>
+              <td>{product.ProductId}</td>
+              <td>{product.type === "Membership" ? "회원권" : "PT 이용권"}</td>
               <td>{product.name}</td>
-              <td>{product.price.toLocalString()}원</td>
+              <td>{product.price.toLocaleString()}원</td>
               <td>{product.durationMonths}개월</td>
               <td>
-                <button onClick={() => handleEdit(product)}>수정</button>
-                <button onClick={() => handleDelete(product.id)}>삭제</button>
+                {user?.role === "ADMIN" ? (
+                  <>
+                    <button onClick={() => handleEdit(product)}>수정</button>
+                    <button onClick={() => handleDelete(product.productId)}>
+                      삭제
+                    </button>
+                  </>
+                ) : (
+                  <button onClick={() => handlePurchase(product.productId)}>
+                    구매하기
+                  </button>
+                )}
               </td>
             </tr>
           ))}

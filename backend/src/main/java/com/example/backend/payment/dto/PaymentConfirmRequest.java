@@ -1,4 +1,4 @@
-package com.example.backend.membership.dto;
+package com.example.backend.payment.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
