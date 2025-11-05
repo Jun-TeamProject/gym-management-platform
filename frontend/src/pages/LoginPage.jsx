@@ -30,6 +30,9 @@ export default function LoginPage() {
       console.error("login error caught in LoginPage:", err);
     }
   };
+  const handleSocialLogin = (provider) => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4">
@@ -89,7 +92,13 @@ export default function LoginPage() {
               {loading ? "로그인 중..." : "로그인"}
             </button>
           </form>
-
+          <div>
+            <button onClick={() => handleSocialLogin("google")} className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold py-3 transition mt-1">
+              <div>
+                구글로 로그인
+              </div>
+            </button>
+          </div>
           <div className="my-6 h-px bg-gray-100" />
 
           <div className="flex items-center justify-between text-sm">
