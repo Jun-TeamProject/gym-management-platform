@@ -13,12 +13,12 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
-        {/*보호된 라우트 (로그인필요) //Todo: ROLE_USER 변경*/}
-        <Route element={<ProtectedRoute requiredRoles={["MEMBER, TRAINER, ADMIN"]} />}>
+        <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
+        
+        <Route element={<ProtectedRoute requiredRoles={['MEMBER', 'TRAINER', 'ADMIN']} />}>
+          <Route path="/" element={<HomePage />} />
           <Route path="/myprofile" element={<MyProfile />} />
         </Route>
 
@@ -31,6 +31,7 @@ const App = () => {
 
         {/*관리자 전용 라우트 (ADMIN) //Todo: /admin/usres 경로 추가*/}
         <Route element={<ProtectedRoute requiredRoles={["ADMIN"]} />}>
+          <Route path="/admin" element={<AdminPage />}/>
           <Route path="/admin/products" element={<ProductList />} />
           <Route path="/admin/branches" element={<BranchList />} />
           {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
