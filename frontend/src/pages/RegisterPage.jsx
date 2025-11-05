@@ -1,101 +1,192 @@
-import {useState} from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
-import { useNavigate } from 'react-router-dom';
 
-function RegisterPage() {
-    const {register, loading, error} = useAuthStore();
-    const Navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        username: "",
-        // phone: "",
-        // role: "",
-        // branch_id: "",
-    });
-
-    const handleChange = (e) => {
-        setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-        });
-    };
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try{
-            await register(formData);
-            Navigate("/login");
-        }catch(err){
-            console.error(err);
-        }
-    };
-
-    return(
-        <div className="flex flex-col items-center justify-self-auto min-h-screen">
-            <div className="bg-blue-500 p-12 rounded-2xl shadow-2xl w-full max-w-md">
-                <h1 className="text-center text-white">회원가입</h1>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <input 
-                        type="email" 
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="이메일 입력" required />
-                        <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="비밀번호 입력"
-                        required
-                        />
-                        <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        placeholder="이름 입력"
-                        required />
-
-                        {/* <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="전화번호 입력" required/>
-
-                        <br></br>
-                        <label for="city-select">지점</label>
-                        <select id="branch-select" name="branch_id"
-                        value={formData.branch_id}
-                        onChange={handleChange}>
-                        <option value="">-- 지점 선택 --</option>
-                        <option value="1">서울</option>
-                        <option value="2">부산</option>
-                        <option value="3">인천</option>
-                        </select>
-
-                        <br></br>
-                        <label for="role-select">role</label>
-                        <select id="role-select" name="role"
-                        value={formData.role}
-                        onChange={handleChange}>
-                        <option value="">-- role 선택 --</option>
-                        <option value="1">MEMBER</option>
-                        <option value="2">TRANINER</option>
-                        <option value="3">ADMIN</option>
-                        </select> */}
-
-                        <button 
-                        type="submit"
-                        >{loading ? "회원 가입 중..." : "회원 가입"}</button>
-                    </div>
-                </form>
-            </div>
-            <a href="/">Home</a><br></br>
-            <a href="/login">login</a>
-        </div>
-    );
+function UserPlusIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M15 12a5 5 0 1 0-6 0 9 9 0 0 0-6 8v2h18v-2a9 9 0 0 0-6-8zM9 7a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm11 5v3h2v2h-2v3h-2v-3h-2v-2h2v-3h2z" />
+    </svg>
+  );
 }
-export default RegisterPage;
+
+export default function RegisterPage() {
+  const navigate = useNavigate();
+  const { register, loading, error } = useAuthStore();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    username: "",
+    // phone: "",
+    // role: "",
+    // branch_id: "",
+  });
+
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await register(formData);
+      alert("회원가입이 완료되었습니다!");
+      navigate("/login");
+    } catch (err) {
+      console.error("Register error:", err);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <h1 className="text-2xl font-extrabold text-gray-900">회원가입</h1>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg border p-6">
+          <p className="text-lg font-semibold text-gray-700 text-center mb-6">
+            Gym Projector <br />
+          </p>
+
+          {error && (
+            <div className="mb-4 rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2 border border-red-100">
+              {String(error)}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                이메일
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="example@email.com"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                비밀번호
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="비밀번호 입력"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                이름
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="홍길동"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+
+            {/* <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                전화번호
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="010-1234-5678"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  지점
+                </label>
+                <select
+                  id="branch-select"
+                  name="branch_id"
+                  value={formData.branch_id}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">-- 지점 선택 --</option>
+                  <option value="1">서울</option>
+                  <option value="2">부산</option>
+                  <option value="3">인천</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  역할(Role)
+                </label>
+                <select
+                  id="role-select"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">-- Role 선택 --</option>
+                  <option value="MEMBER">회원</option>
+                  <option value="TRAINER">트레이너</option>
+                  <option value="ADMIN">관리자</option>
+                </select>
+              </div>
+            </div> */}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? "회원가입 중..." : "회원가입"}
+            </button>
+          </form>
+
+          <div className="my-6 h-px bg-gray-100" />
+
+          <div className="flex justify-between text-sm text-gray-600">
+            <Link to="/" className="hover:text-gray-900 underline-offset-2 hover:underline">
+              홈으로
+            </Link>
+            <Link to="/login" className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline">
+              로그인
+            </Link>
+          </div>
+        </div>
+
+        <p className="text-center text-xs text-gray-500 mt-4">
+          이미 계정이 있으신가요?{" "}
+          <Link
+            to="/login"
+            className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline"
+          >
+            로그인하기
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
