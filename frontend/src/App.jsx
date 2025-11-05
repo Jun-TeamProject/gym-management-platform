@@ -8,6 +8,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import ProductList from "./component/ProductList";
 import BranchList from "./component/BranchList";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import OAuthRedirectHandler from "./pages/OAuthRedirectHandler";
+import AdminPage from "./pages/AdminPage";
 
 const App = () => {
   return (
