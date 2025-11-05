@@ -33,7 +33,7 @@ const Calender = () => {
                         ...prevEvents,
                         { title: title, date: info.dateStr}
                     ]);
-                    // calendarService.create({title: title, date: info.Date});
+                    // calendarService.create({id: calendarService.id, title: title});
                     
                 }
                 return;
@@ -49,7 +49,7 @@ const Calender = () => {
                     ...prevEvents,
                     { title: title, date: info.dateStr}
                 ]);
-                // calendarService.create({title: title, date: info.Date});
+                // calendarService.create({id: calendarService.id, title: title});
             }
         // await fetchAttendances();
     }
@@ -61,7 +61,7 @@ const Calender = () => {
 
         if(newTitle === ''){
             clickedEvent.remove();
-            // calendarService.delete();
+            // calendarService.delete({id: calendarService.id});
             alert("메모 삭제되었습니다");
 
         }

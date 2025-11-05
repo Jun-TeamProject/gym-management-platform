@@ -9,7 +9,7 @@ const attendanceButton = () => {
             const userId = currentUser.id;
             const result = await attendService.attend(userId); 
 
-            //캘린더 업데이트 추가 예정            
+            await fetchAttendances();
         } catch (error) {
             console.error("출석 체크 실패:", error);
         }
