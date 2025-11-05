@@ -18,7 +18,7 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
 
         {/*보호된 라우트 (로그인필요) //Todo: ROLE_USER 변경*/}
-        <Route element={<ProtectedRoute requiredRoles={["ROLE_USER"]} />}>
+        <Route element={<ProtectedRoute requiredRoles={["MEMBER, TRAINER, ADMIN"]} />}>
           <Route path="/myprofile" element={<MyProfile />} />
         </Route>
 
