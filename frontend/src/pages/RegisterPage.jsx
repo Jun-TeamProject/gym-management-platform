@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
-import { useNavigate } from 'react-router-dom';
 
 function UserPlusIcon(props) {
   return (
