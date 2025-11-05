@@ -26,12 +26,7 @@ public class ProductService {
 
     //2. 상품 등록
     public ProductResponse createProduct(ProductRequest request) {
-        Product product = Product.builder()
-                .type(request.getType())
-                .name(request.getName())
-                .price(request.getPrice())
-                .durationMonths(request.getDurationMonths())
-                .build();
+        Product product = buildProductFromRequest(request);
         return ProductResponse.of(productRepository.save(product));
     }
 
@@ -44,7 +39,13 @@ public class ProductService {
         product.setType(request.getType());
         product.setName(request.getName());
         product.setPrice(request.getPrice());
-        product.setDurationMonths(request.getDurationMonths());
+        if (request.getType() == Product.ProductType.Membership) {
+            product.setDurationMonths(request.getDurationMonths() != null ? request.getDurationMonths() : 0);
+            product.setSessionCount(0);
+        } else {
+            product.setSessionCount(request.getSessionCount() != null ? request.getSessionCount() : 0);
+            product.setDurationMonths(0);
+        }
         return ProductResponse.of(product);
     }
 
@@ -58,5 +59,22 @@ public class ProductService {
         }
 
         productRepository.deleteById(id);
+    }
+
+    private Product buildProductFromRequest(ProductRequest request) {
+        Product.ProductBuilder builder = Product.builder()
+                .type(request.getType())
+                .name(request.getName())
+                .price(request.getPrice());
+
+        if (request.getType() == Product.ProductType.Membership) {
+            builder.durationMonths(request.getDurationMonths() != null ? request.getDurationMonths() : 0);
+            builder.sessionCount(0);
+        } else {
+            builder.sessionCount(request.getSessionCount() != null ? request.getSessionCount() : 0);
+            builder.durationMonths(0);
+        }
+
+        return builder.build();
     }
 }
