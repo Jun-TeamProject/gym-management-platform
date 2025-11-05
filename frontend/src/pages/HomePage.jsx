@@ -127,6 +127,9 @@ export default function HomePage() {
             <a href="#contact" className="text-gray-600 hover:text-gray-900">문의</a>
           </nav>
           <div className="flex items-center gap-3">
+            <Link to="/admin" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100">
+              어드민페이지
+            </Link>
             <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100">
               로그인
             </Link>
