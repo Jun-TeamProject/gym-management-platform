@@ -1,7 +1,7 @@
 package com.example.backend.comment.dto;
 
 import com.example.backend.comment.entity.Comment;
-import com.example.backend.dto.UserDto;
+import com.example.backend.user.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.example.backend.like.entity;
 
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import com.example.backend.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

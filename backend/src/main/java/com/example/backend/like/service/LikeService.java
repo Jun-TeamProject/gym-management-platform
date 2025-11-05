@@ -2,12 +2,12 @@ package com.example.backend.like.service;
 
 import com.example.backend.like.entity.Like;
 import com.example.backend.post.entity.Post;
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import com.example.backend.exception.BadRequestException;
 import com.example.backend.like.repository.LikeRepository;
 import com.example.backend.post.repository.PostRepository;
-import com.example.backend.repository.UserRepository;
-import com.example.backend.service.AuthenticationService;
+import com.example.backend.user.repository.UserRepository;
+import com.example.backend.user.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

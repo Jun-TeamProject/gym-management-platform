@@ -1,6 +1,6 @@
 package com.example.backend.post.entity;
 
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import com.example.backend.like.entity.Like;
 import com.example.backend.comment.entity.Comment;
 import jakarta.persistence.*;

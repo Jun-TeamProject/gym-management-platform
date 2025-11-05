@@ -1,6 +1,6 @@
 package com.example.backend.post.dto;
 
-import com.example.backend.dto.UserDto;
+import com.example.backend.user.dto.UserDto;
 import com.example.backend.post.entity.Post;
 import com.example.backend.post.entity.Type;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,8 @@
-package com.example.backend.service;
+package com.example.backend.user.service;
 
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import com.example.backend.exception.ResourceNotFoundException;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
