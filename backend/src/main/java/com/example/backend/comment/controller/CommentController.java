@@ -38,4 +38,19 @@ public class CommentController {
         Page<CommentResponse> comments = commentService.getComments(postId, pageable);
         return ResponseEntity.ok(comments);
     }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentResponse> updateComment(
+            @PathVariable Long commentId,
+            @Valid @RequestBody CommentRequest request
+    ) {
+        CommentResponse response = commentService.updateComment(commentId,request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.noContent().build();
+    }
 }
