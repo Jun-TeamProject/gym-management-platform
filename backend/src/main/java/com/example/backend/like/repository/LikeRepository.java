@@ -2,7 +2,7 @@ package com.example.backend.like.repository;
 
 import com.example.backend.like.entity.Like;
 import com.example.backend.post.entity.Post;
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

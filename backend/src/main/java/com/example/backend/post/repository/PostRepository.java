@@ -1,6 +1,6 @@
 package com.example.backend.post.repository;
 
-import com.example.backend.entity.User;
+import com.example.backend.user.entity.User;
 import com.example.backend.post.entity.Post;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
