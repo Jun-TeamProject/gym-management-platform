@@ -68,7 +68,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     newUser.setProfileImageUrl(finalAvatarUrl);
                     newUser.setPassword("");
                     newUser.setEnabled(true);
-                    newUser.setRole(Role.USER);
+                    newUser.setRole(Role.MEMBER);
                     newUser.setCreatedAt(LocalDateTime.now());
                     newUser.setUpdatedAt(LocalDateTime.now());
                     return userRepository.save(newUser);
