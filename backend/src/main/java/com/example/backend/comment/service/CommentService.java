@@ -6,6 +6,7 @@ import com.example.backend.comment.entity.Comment;
 import com.example.backend.post.entity.Post;
 import com.example.backend.user.entity.User;
 import com.example.backend.exception.ResourceNotFoundException;
+import com.example.backend.exception.UnauthorizedException;
 import com.example.backend.comment.repository.CommentRepository;
 import com.example.backend.post.repository.PostRepository;
 import com.example.backend.user.service.AuthenticationService;
@@ -49,5 +50,38 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
         return comments.map(CommentResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUserCommentCount(Long postId) {
+        authenticationService.getCurrentUser();
+        return commentRepository.countByPostId(postId);
+    }
+
+    public CommentResponse updateComment(Long commentId,CommentRequest request) {
+        User currentUser = authenticationService.getCurrentUser();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not authorized to update this comment");
+        }
+
+        comment.setContent(request.getContent());
+
+        comment = commentRepository.save(comment);
+        return CommentResponse.fromEntity(comment);
+    }
+
+    public void deleteComment(Long commentId) {
+        User currentUser = authenticationService.getCurrentUser();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not authorized to update this comment");
+        }
+
+        commentRepository.deleteById(commentId);
     }
 }
