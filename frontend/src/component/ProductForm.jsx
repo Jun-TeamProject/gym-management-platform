@@ -71,7 +71,7 @@ const ProductForm = ({ product, onClose, onSubmitSuccess }) => {
       onSubmitSuccess();
     } catch (error) {
       console.error("상품 저장/ 수정 실패: ", error.response?.data || error);
-      alert("저장/수정에 실패했습니다.");
+      alert("저장 / 수정에 실패했습니다.");
     }
   };
 

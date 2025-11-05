@@ -39,7 +39,7 @@ const BranchForm = ({ branch, onClose, onSubmitSuccess }) => {
         await BranchApi.createBranch(formData);
         alert("새 지점이 등록되었습니다.");
       }
-      onSubmitSuccess;
+      onSubmitSuccess();
     } catch (error) {
       console.error("지점 저장 / 수정 실패: ", error.response?.data || error);
       alert("저장 / 수정에 실패했습니다. 필드를 확인해 주세요");
