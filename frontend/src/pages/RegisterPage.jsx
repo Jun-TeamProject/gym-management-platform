@@ -17,10 +17,10 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
-    phone: "",
-    role: "",
-    branch_id: "",
+    username: "",
+    // phone: "",
+    // role: "",
+    // branch_id: "",
   });
 
   const handleChange = (e) =>
@@ -92,8 +92,8 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 placeholder="홍길동"
                 required
@@ -101,7 +101,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 전화번호
               </label>
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                   <option value="ADMIN">관리자</option>
                 </select>
               </div>
-            </div>
+            </div> */}
 
             <button
               type="submit"
