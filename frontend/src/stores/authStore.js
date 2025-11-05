@@ -51,6 +51,31 @@ const useAuthStore = create((set) => ({
       isAuthenticated: false,
       error: null,
     });
-  },
+    },
+    socialLoginSuccess: () => {
+        const accessToken = localStorage.getItem("accessToken");
+        const userStr = localStorage.getItem("user");
+        const user = userStr ? JSON.parse(userStr) : null;
+
+        if(accessToken && user){
+            set({
+                user: user,
+                isAuthenticated: !!accessToken,
+                loading: false,
+                error: null,
+            });
+            return true;
+        }else{
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            set({
+                user: null,
+                isAuthenticated: false,
+                loading: false,
+            });
+            return false;
+        }
+    }
 }));
 export default useAuthStore;
