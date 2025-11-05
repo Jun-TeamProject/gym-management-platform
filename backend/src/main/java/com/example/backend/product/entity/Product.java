@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "T_PRODUCT")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -25,9 +26,11 @@ public class Product {
     @Column(nullable = false)
     private int price; // 가격
 
-    @Column(nullable = false)
-    private int durationMonths; //유효기간
+    @Column
+    private Integer durationMonths; //유효기간
 
+    @Column
+    private Integer sessionCount; //PT 횟수
     public enum ProductType {
         Membership, PT
     }
