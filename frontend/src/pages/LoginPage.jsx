@@ -14,7 +14,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { login, loading, error } = useAuthStore();
 
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ loginId: "", password: "" });
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -53,14 +53,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                이메일
+                이메일 or username
               </label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="loginId"
+                value={formData.loginId}
                 onChange={handleChange}
-                placeholder="example@email.com"
+                placeholder="enter your email or username"
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               />

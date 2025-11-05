@@ -33,5 +33,9 @@ const authService = {
     isAuthenticated() {
         return !!localStorage.getItem("accessToken");
   },
+    getRole(){
+        const user = this.getCurrentUser();
+        return user ? user.role : null;
+    },
 }
 export default authService;
