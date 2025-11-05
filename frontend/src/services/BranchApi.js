@@ -1,6 +1,6 @@
 import api from "./api";
 
-const BRANCH_API_URL = "/branches";
+const BRANCH_API_URL = "/api/branches";
 
 export const BranchApi = {
   getAllBranches: async () => {
@@ -12,11 +12,11 @@ export const BranchApi = {
     return api.post(BRANCH_API_URL, branchData);
   },
 
-  updateBranch: async (id, branchData) => {
-    return api.put(`${BRANCH_API_URL}/${id}`, branchData);
+  updateBranch: async (branchId, branchData) => {
+    return api.put(`${BRANCH_API_URL}/${branchId}`, branchData);
   },
 
-  deleteBranch: async (id) => {
-    return api.delete(`${BRANCH_API_URL}/${id}`);
+  deleteBranch: async (branchId) => {
+    return api.delete(`${BRANCH_API_URL}/${branchId}`);
   },
 };
