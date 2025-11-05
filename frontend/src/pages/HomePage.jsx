@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/authStore";
 
 function DumbbellIcon(props) {
   return (
@@ -99,7 +100,12 @@ function Sidebar({ open }) {
 
 export default function HomePage() {
   const [open, setOpen] = useState(true); 
-
+  const navigate = useNavigate();
+  const logout = useAuthStore((s) => s.logout);
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Sidebar open={open} />
@@ -121,12 +127,18 @@ export default function HomePage() {
             <a href="#contact" className="text-gray-600 hover:text-gray-900">문의</a>
           </nav>
           <div className="flex items-center gap-3">
+            <Link to="/admin" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100">
+              어드민페이지
+            </Link>
             <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100">
               로그인
             </Link>
             <Link to="/register" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
               회원가입
             </Link>
+            <button onClick={handleLogout}>
+            로그아웃
+            </button>
           </div>
         </div>
       </header>
