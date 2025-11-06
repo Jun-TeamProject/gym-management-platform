@@ -12,6 +12,11 @@ const PaymentApi = {
     // 벡엔드 POST /api/payments/confirm 호출
     return api.post("/api/payments/confirm", paymentData);
   },
+
+  //API 3: 결제 내역 
+ getMyPayments: async () => {
+    return api.get("/api/payments/me");
+ },
 };
 
 export default PaymentApi;
