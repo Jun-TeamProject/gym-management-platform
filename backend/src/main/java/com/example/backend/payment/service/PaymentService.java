@@ -3,11 +3,8 @@ package com.example.backend.payment.service;
 import com.example.backend.global.config.TossPaymentConfig;
 import com.example.backend.membership.repository.MembershipRepository;
 import com.example.backend.payment.client.TossPaymentsApiClient;
-import com.example.backend.payment.dto.PaymentConfirmRequest;
-import com.example.backend.payment.dto.PaymentPrepareRequest;
-import com.example.backend.payment.dto.PaymentPrepareResponse;
+import com.example.backend.payment.dto.*;
 import com.example.backend.membership.entity.Membership;
-import com.example.backend.payment.dto.TossPaymentResponse;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.payment.repository.PaymentRepository;
 import com.example.backend.product.entity.Product;
@@ -62,7 +59,7 @@ public class PaymentService {
      * API 2: 결제 승인 (Confirm)
      */
     @Transactional
-    public Payment confirmPayment(PaymentConfirmRequest request, Long userId) {
+    public PaymentConfirmResponse confirmPayment(PaymentConfirmRequest request, Long userId) {
         // 1. 주문(Payment) 조회 및 검증
         Payment payment = paymentRepository.findByOrderId(request.getOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다: " + request.getOrderId()));
@@ -99,7 +96,7 @@ public class PaymentService {
 
             log.info("결제 승인 및 회원권 발급 완료: orderId={}, membershipId={}", request.getOrderId(), membership.getId());
 
-            return payment;
+            return PaymentConfirmResponse.of(payment);
 
         } catch (Exception e) {
             log.error("결제 승인 실패: orderId={}, error={}", request.getOrderId(), e.getMessage());
