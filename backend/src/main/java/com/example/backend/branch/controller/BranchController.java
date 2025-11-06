@@ -26,21 +26,21 @@ public class BranchController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')") // ADMIN에서만 등록 가능
+    @PreAuthorize("hasAuthority('ADMIN')") // ADMIN에서만 등록 가능
     public ResponseEntity<BranchResponse> createBranch(@RequestBody BranchRequest request){
         BranchResponse response = branchService.createBranch(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BranchResponse> updateBranch(@PathVariable Long id, @RequestBody BranchRequest request) {
         BranchResponse response = branchService.updateBranch(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteBranch(@PathVariable Long id) {
         branchService.deleteBranch(id);
         return ResponseEntity.noContent().build();

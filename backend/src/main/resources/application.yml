@@ -32,6 +32,13 @@ jwt:
   expiration: 86400000
   refresh-expiration: 604800000
 
+toss:
+  payments:
+    client-key: ${TOSS_CLIENT_KEY}
+    secret-key: ${TOSS_SECRET_KEY}
+    api:
+      base-url: https://api.tosspayments.com/v1
+
 server:
   port: 8080
 
