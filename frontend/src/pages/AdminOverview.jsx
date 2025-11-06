@@ -10,8 +10,8 @@ const AdminOverview = () => {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-extrabold text-gray-900">상품 및 지점 관리</h1>
-        <Link to="/admin/users" className={primaryButtonClass}>
-          관리자 페이지로
+        <Link to="/admin" className={primaryButtonClass}>
+          관리자 홈
         </Link>
       </div>
 

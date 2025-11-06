@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
+import AdminMain from "./pages/AdminMain";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
@@ -42,7 +43,8 @@ const App = () => {
 
           {/*관리자 전용 라우트 (ADMIN) //Todo: /admin/usres 경로 추가*/}
           <Route element={<ProtectedRoute requiredRoles={["ADMIN"]} />}>
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin" element={<AdminMain />} />
+            <Route path="/admin/users" element={<AdminPage />} />
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
             <Route path="/admin/overview" element={<AdminOverview />} />
