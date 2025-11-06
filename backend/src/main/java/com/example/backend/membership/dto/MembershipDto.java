@@ -1,22 +1,33 @@
 package com.example.backend.membership.dto;
 
-import com.example.backend.product.dto.ProductDto;
-import lombok.AllArgsConstructor;
+import com.example.backend.membership.entity.Membership;
+import com.example.backend.membership.entity.Membership.MembershipStatus;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class MembershipDto {
     private Long id;
+    private String productName;
+    private String productType;
     private LocalDate startDate;
     private LocalDate endDate;
     private int ptCountRemaining;
-//    private String status;
-    private ProductDto product;
+    private MembershipStatus status;
+
+    //
+    public static MembershipDto fromEntity(Membership membership) {
+        return MembershipDto.builder()
+                .id(membership.getId())
+                .productName(membership.getProduct().getName()) //
+                .productType(membership.getProduct().getType().name()) //
+                .startDate(membership.getStartDate())
+                .endDate(membership.getEndDate())
+                .ptCountRemaining(membership.getPtCountRemaining())
+                .status(membership.getStatus())
+                .build();
+    }
 }

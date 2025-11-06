@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import PaymentApi from "../services/PaymentApi";
 
 const PaymentSuccessPage = () => {
-  const navigate = useNavigate();
+  //   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("결제 승인 중입니다..");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   //중복 실행 방지 Ref
   const isConfirmedRef = useRef(false);
@@ -39,6 +40,7 @@ const PaymentSuccessPage = () => {
         setMessage(
           `결제가 성공적으로 완료되었습니다! (주문번호: ${response.data.orderId}) 회원권이 정상 결제되었습니다.`
         );
+        setIsSuccess(true);
       } catch (err) {
         console.error("결제 승인 실패: ", err);
         setMessage(
@@ -46,6 +48,7 @@ const PaymentSuccessPage = () => {
             err.response?.data?.message || err.message
           }`
         );
+        setIsSuccess(false);
       }
     };
 
@@ -53,10 +56,29 @@ const PaymentSuccessPage = () => {
   }, [searchParams]);
 
   return (
-    <div className="payment-result-page">
-      <h2> 결제 결과</h2>
-      <p>{message}</p>
-      <Link to="/myprofile">내 정보로 이동 (맴버쉽 확인)</Link>
+    <div className="payment-result-page bg-white p-8 rounded-2xl shadow-lg border max-w-2xl mx-auto text-center">
+      {isSuccess ? (
+        <div className="text-6xl mb-4">☑️</div>
+      ) : (
+        <div className="text-6xl mb-4">✖️</div>
+      )}
+
+      <h2
+        className={`text-2xl font-extrabold ${
+          isSuccess ? "text-gray-900" : "text-red-600"
+        } mb-4`}
+      >
+        {isSuccess ? "결제 완료" : "결제 승인 실패"}
+      </h2>
+
+      <p className="text-lg text-gray-700 mb-8">{message}</p>
+
+      <Link
+        to={isSuccess ? "/myprofile" : "/products"}
+        className="w-full mt-4 px-6 py-3 rounded-lg text-lg font-semibold transition text-white bg-blue-600 hover:bg-blue-700"
+      >
+        {isSuccess ? "내 정보로 이동" : "상품 목록으로 돌아가기"}
+      </Link>
     </div>
   );
 };
