@@ -1,6 +1,7 @@
 package com.example.backend.user.entity;
 
 import com.example.backend.branch.entity.Branch;
+import com.example.backend.membership.entity.Membership;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -78,6 +80,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "branch_id")
     @JsonIgnoreProperties({"users"})
     private Branch branch;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Membership> memberships;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

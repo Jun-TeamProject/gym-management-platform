@@ -1,5 +1,6 @@
 package com.example.backend.user.dto;
 
+import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -25,8 +28,13 @@ public class UserDto {
     private LocalDate birthdate;
     private Long branchId;
     private String branchName;
+    private List<MembershipDto> memberships;
 
     public static UserDto fromEntity(User user) {
+        List<MembershipDto> membershipDtos = user.getMemberships().stream()
+                .map(MembershipDto::fromEntity)
+                .collect(Collectors.toList());
+
         return UserDto.builder()
                 .id(user.getId())
                 .username(user.getRealUsername())
@@ -40,6 +48,7 @@ public class UserDto {
                 .birthdate(user.getBirthdate())
                 .branchId(user.getBranch() != null ? user.getBranch().getId() : null)
                 .branchName(user.getBranch() != null ? user.getBranch().getBranchName() : null)
+                .memberships(membershipDtos)
                 .build();
     }
 }
