@@ -1,7 +1,5 @@
 package com.example.backend.reservation.controller;
 
-import com.example.backend.post.dto.PostRequest;
-import com.example.backend.post.dto.PostResponse;
 import com.example.backend.reservation.dto.ReservationRequest;
 import com.example.backend.reservation.dto.ReservationResponse;
 import com.example.backend.reservation.service.ReservationService;
@@ -18,10 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
+
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(
+            @Valid @RequestBody ReservationRequest request
+    ) {
         ReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -37,7 +38,9 @@ public class ReservationController {
     }
 
     @GetMapping("/{reservationId}")
-    public ResponseEntity<ReservationResponse> getReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<ReservationResponse> getReservation(
+            @PathVariable Long reservationId
+    ) {
         ReservationResponse response = reservationService.getReservation(reservationId);
         return ResponseEntity.ok(response);
     }
@@ -74,7 +77,9 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable Long reservationId
+    ) {
         reservationService.deleteReservation(reservationId);
         return ResponseEntity.noContent().build();
     }
