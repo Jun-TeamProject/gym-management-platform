@@ -132,7 +132,7 @@ export default function MainLayout() {
                   로그아웃
                 </button>
                 {user.role === 'ADMIN' && (
-                  <Link to="/admin/users" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
+                  <Link to="/admin" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
                     관리자
                   </Link>
                 )}
