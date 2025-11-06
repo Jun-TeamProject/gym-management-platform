@@ -14,6 +14,7 @@ import OAuthRedirectHandler from "./pages/OAuthRedirectHandler";
 import AdminPage from "./pages/AdminPage";
 import ProductPurchaseList from "./pages/ProductPurchaseList";
 import AdminOverview from "./pages/AdminOverview";
+import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
           <Route element={<ProtectedRoute requiredRoles={["MEMBER"]} />}>
             <Route path="/checkout/:productId" element={<CheckoutPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
+            <Route path="/purchases" element={<PaymentHistoryPage />} />
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>
 

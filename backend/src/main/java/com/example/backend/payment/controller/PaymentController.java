@@ -1,10 +1,7 @@
 package com.example.backend.payment.controller;
 
 import com.example.backend.global.config.TossPaymentConfig;
-import com.example.backend.payment.dto.PaymentConfirmRequest;
-import com.example.backend.payment.dto.PaymentConfirmResponse;
-import com.example.backend.payment.dto.PaymentPrepareRequest;
-import com.example.backend.payment.dto.PaymentPrepareResponse;
+import com.example.backend.payment.dto.*;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.payment.service.PaymentService;
 import com.example.backend.user.entity.User;
@@ -16,10 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,5 +75,18 @@ public class PaymentController {
             log.error("결제 승인 API 실패: {}", e.getMessage());
             return ResponseEntity.status(400).body(null); // 실패 응답
         }
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('MEMBER')")
+    public ResponseEntity<List<PaymentHistoryResponse>> getMyPayments(Authentication authentication){
+
+        String loginId = authentication.getName();
+        User currentUser = userRepository.findByEmail(loginId)
+                .or(() -> userRepository.findByUsername(loginId))
+                .orElseThrow(()-> new UsernameNotFoundException("User not found: " + loginId));
+
+        List<PaymentHistoryResponse> paymentHistory = paymentService.getMyPayments(currentUser.getId());
+        return ResponseEntity.ok(paymentHistory);
     }
 }
