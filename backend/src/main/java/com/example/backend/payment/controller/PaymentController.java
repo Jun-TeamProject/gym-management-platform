@@ -2,6 +2,7 @@ package com.example.backend.payment.controller;
 
 import com.example.backend.global.config.TossPaymentConfig;
 import com.example.backend.payment.dto.PaymentConfirmRequest;
+import com.example.backend.payment.dto.PaymentConfirmResponse;
 import com.example.backend.payment.dto.PaymentPrepareRequest;
 import com.example.backend.payment.dto.PaymentPrepareResponse;
 import com.example.backend.payment.entity.Payment;
@@ -57,7 +58,7 @@ public class PaymentController {
      */
     @PostMapping("/confirm")
     @PreAuthorize("hasRole('MEMBER')") // 회원만 결제 승인 가능
-    public ResponseEntity<Payment> confirmPayment(
+    public ResponseEntity<PaymentConfirmResponse> confirmPayment(
             @Valid @RequestBody PaymentConfirmRequest request,
             Authentication authentication) {
 
@@ -72,8 +73,8 @@ public class PaymentController {
         Long userId = currentUser.getId();
 
         try {
-            Payment payment = paymentService.confirmPayment(request, userId);
-            return ResponseEntity.ok(payment); // 성공 시 결제 정보 반환
+            PaymentConfirmResponse response = paymentService.confirmPayment(request, userId);
+            return ResponseEntity.ok(response); // 성공 시 결제 정보 반환
         } catch (Exception e) {
             log.error("결제 승인 API 실패: {}", e.getMessage());
             return ResponseEntity.status(400).body(null); // 실패 응답
