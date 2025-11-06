@@ -37,7 +37,7 @@ const PaymentSuccessPage = () => {
 
         // 3. 성공처리
         setMessage(
-          `결제가 성공적으로 완ㄹ료되었습니다! (주문번호: ${response.data.orderId}) 회원권이 정상 결제되었습니다.`
+          `결제가 성공적으로 완료되었습니다! (주문번호: ${response.data.orderId}) 회원권이 정상 결제되었습니다.`
         );
       } catch (err) {
         console.error("결제 승인 실패: ", err);

@@ -1,5 +1,7 @@
 package com.example.backend.user.service;
 
+import com.example.backend.membership.dto.MembershipDto;
+import com.example.backend.membership.entity.Membership;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.entity.Role;
@@ -40,7 +42,29 @@ public class AdminService {
 
         return UserDto.fromEntity(updatedUser);
     }
+    private MembershipDto convertToMembershipDto(Membership membershipEntity) {
+        if (membershipEntity == null) return null;
 
+        return MembershipDto.builder()
+                .id(membershipEntity.getId())
+                .startDate(membershipEntity.getStartDate())
+                .endDate(membershipEntity.getEndDate())
+                .ptCountRemaining(membershipEntity.getPtCountRemaining())
+//                .status(membershipEntity.getStatus())
+                .build();
+    }
+
+    private UserDto convertToUserDto(User user) {
+        MembershipDto membershipDto = convertToMembershipDto(user.getMembership());
+
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getRealUsername())
+                .role(user.getRole().getKey())
+                .email(user.getEmail())
+                .membership(membershipDto)
+                .build();
+    }
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(String role) {
         List<User> users;
@@ -56,8 +80,11 @@ public class AdminService {
             }
         }
 
+//        return users.stream()
+//                .map(UserDto::fromEntity)
+//                .collect(Collectors.toList());
         return users.stream()
-                .map(UserDto::fromEntity)
+                .map(this::convertToUserDto)
                 .collect(Collectors.toList());
     }
 

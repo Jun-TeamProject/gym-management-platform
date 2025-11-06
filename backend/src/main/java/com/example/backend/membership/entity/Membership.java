@@ -3,6 +3,8 @@ package com.example.backend.membership.entity;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.product.entity.Product;
 import com.example.backend.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,14 +27,17 @@ public class Membership {
     // ----- 연관 관계 (핵심) -----
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonBackReference
     private User user; // 이용권 소유자 (1:1 관계 - ERD 기반)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
     private Product product; // 구매한 상품
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false)
+    @JsonIgnore
     private Payment payment; // 이 이용권을 생성한 결제 기록
 
     // ----- 이용권 정보 -----

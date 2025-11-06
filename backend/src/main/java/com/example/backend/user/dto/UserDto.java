@@ -1,5 +1,7 @@
 package com.example.backend.user.dto;
 
+import com.example.backend.membership.dto.MembershipDto;
+import com.example.backend.membership.entity.Membership;
 import com.example.backend.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +25,8 @@ public class UserDto {
     private String bio;
     private String gender;
     private LocalDate birthdate;
+    private MembershipDto membership;
+
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()

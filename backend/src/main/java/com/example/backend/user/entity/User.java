@@ -1,5 +1,8 @@
 package com.example.backend.user.entity;
 
+import com.example.backend.membership.dto.MembershipDto;
+import com.example.backend.membership.entity.Membership;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -71,6 +74,10 @@ public class User implements UserDetails {
     private Gender gender;
 
     private LocalDate birthdate;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Membership membership;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
