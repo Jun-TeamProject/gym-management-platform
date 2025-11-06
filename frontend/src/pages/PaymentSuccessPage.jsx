@@ -55,30 +55,47 @@ const PaymentSuccessPage = () => {
     confirm();
   }, [searchParams]);
 
+  const renderIcon = () => {
+    if (isSuccess === true) {
+      return <div className="text-6xl mb-4">☑️</div>;
+    }
+    if (isSuccess === false) {
+      return <div className="text-6xl mb-4">✖️</div>;
+    }
+    return <div className="text-6xl mb-4 animate-spin">⌛</div>;
+  };
+  const renderTitle = () => {
+    if (isSuccess === true) {
+      return "결제 완료";
+    }
+    if (isSuccess === false) {
+      return "결제 승인 실패";
+    }
+    return "결제 승인 중";
+  };
   return (
     <div className="payment-result-page bg-white p-8 rounded-2xl shadow-lg border max-w-2xl mx-auto text-center">
-      {isSuccess ? (
-        <div className="text-6xl mb-4">☑️</div>
-      ) : (
-        <div className="text-6xl mb-4">✖️</div>
-      )}
-
+      {renderIcon()}
       <h2
         className={`text-2xl font-extrabold ${
-          isSuccess ? "text-gray-900" : "text-red-600"
+          isSuccess === true ? "text-gray-900" : ""
+        } ${isSuccess === false ? "text-red-600" : ""} ${
+          isSuccess === null ? "text-blue-600" : ""
         } mb-4`}
       >
-        {isSuccess ? "결제 완료" : "결제 승인 실패"}
+        {renderTitle()}
       </h2>
 
       <p className="text-lg text-gray-700 mb-8">{message}</p>
 
-      <Link
-        to={isSuccess ? "/myprofile" : "/products"}
-        className="w-full mt-4 px-6 py-3 rounded-lg text-lg font-semibold transition text-white bg-blue-600 hover:bg-blue-700"
-      >
-        {isSuccess ? "내 정보로 이동" : "상품 목록으로 돌아가기"}
-      </Link>
+      {isSuccess !== null && (
+        <Link
+          to={isSuccess ? "/myprofile" : "/products"}
+          className="w-full mt-4 px-6 py3 rounded-lg text-lg font-semibold transition text-white bg-blue-600 hover:bg-blue-700"
+        >
+          {isSuccess ? "내 정보로 이동" : "상품 목록으로 돌아가기"}
+        </Link>
+      )}
     </div>
   );
 };

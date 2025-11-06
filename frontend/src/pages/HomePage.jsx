@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import useAuthStore from "../stores/authStore";
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuthStore(); 
+
+
   return (
     <>
       {/* 홈페이지 기본 내용 (좌측 여백: 사이드바 열림 상태에 따라) */}
@@ -32,7 +36,7 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/register"
+                to={isAuthenticated ? "/products" : "/register"}
                 className="px-5 py-3 rounded-xl text-white bg-blue-600 hover:bg-blue-700 font-semibold"
               >
                 지금 시작하기
