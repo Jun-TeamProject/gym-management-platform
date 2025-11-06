@@ -31,6 +31,8 @@ public class AdminInitializer implements CommandLineRunner {
         createAdminUser(defaultBranch);
 
         // 필요시 테스트용 계정도 생성 가능
+        createInitialBranches();
+
     }
 
     private Branch createDefaultBranch() {
@@ -76,5 +78,36 @@ public class AdminInitializer implements CommandLineRunner {
         } else {
             log.info("ADMIN 계정이 이미 존재합니다. (Email: {}", ADMIN_EMAIL);
         }
+    }
+
+
+    private void createInitialBranches() {
+        List<BranchInfo> branches = List.of(
+                new BranchInfo("강남점", "서울특별시 강남구", "02-123-1234"),
+                new BranchInfo("해운대점", "부산광역시 해운대구", "051-123-1234"),
+                new BranchInfo("홍대점", "서울특별시 마포구", "02-456-4567")
+        );
+
+        for (BranchInfo info: branches) {
+            if (branchRepository.findByBranchName(info.name).isEmpty()){
+                Branch branch = Branch.builder()
+                        .branchName(info.name)
+                        .location(info.location)
+                        .phone(info.phone)
+                        .type(BranchType.REGULAR)
+                        .build();
+                branchRepository.save(branch);
+                log.info(" {} 지점이 생성되었습니다.", info.name);
+            }else {
+                log.info(" {} 지점이 이미 존재합니다.", info.name);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class BranchInfo {
+        final String name;
+        final String location;
+        final String phone;
     }
 }
