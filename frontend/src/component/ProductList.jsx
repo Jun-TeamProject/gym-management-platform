@@ -71,6 +71,7 @@ const ProductList = () => {
               setEditingProduct(null);
               setIsFormOpen(true);
             }}
+            className={primaryButtonClass} 
           >
             + 새 상품 등록
           </button>

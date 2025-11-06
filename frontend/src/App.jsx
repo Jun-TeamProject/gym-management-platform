@@ -12,6 +12,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import OAuthRedirectHandler from "./pages/OAuthRedirectHandler";
 import AdminPage from "./pages/AdminPage";
 import ProductPurchaseList from "./pages/ProductPurchaseList";
+import AdminOverview from "./pages/AdminOverview";
 
 const App = () => {
   return (
@@ -44,6 +45,8 @@ const App = () => {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
+            <Route path="/admin/overview" element={<AdminOverview />} />
+
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>
         </Route>
