@@ -1,5 +1,7 @@
 package com.example.backend.user.service;
 
+import com.example.backend.branch.entity.Branch;
+import com.example.backend.branch.repository.BranchRepository;
 import com.example.backend.user.dto.AuthRequest;
 import com.example.backend.user.dto.AuthResponse;
 import com.example.backend.user.dto.RegisterRequest;
@@ -11,6 +13,7 @@ import com.example.backend.user.exception.UserAlreadyExistsException;
 import com.example.backend.user.exception.AuthenticationException;
 import com.example.backend.user.repository.UserRepository;
 import com.example.backend.global.security.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final BranchRepository branchRepository;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -38,12 +41,16 @@ public class AuthService {
             throw new UserAlreadyExistsException("Email already exists");
         }
 
+        Branch branch = branchRepository.findById(request.getBranchId())
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + request.getBranchId()));
+
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .provider(Provider.LOCAL)
                 .role(Role.MEMBER)
+                .branch(branch)
                 .build();
 
         User savedUser = userRepository.save(user);
