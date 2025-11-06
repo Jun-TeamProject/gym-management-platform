@@ -11,11 +11,14 @@ const useAuthStore = create((set) => ({
         set({ loading: true, error: null});
         try {
             const data = await authService.register(userData);
-            set({
-                user: data.user,
-                isAuthenticated: true,
-                loading: false,
-            });
+            // set({
+            //     user: data.user,
+            //     isAuthenticated: true,
+            //     loading: false,
+            // });
+            
+            //회원가입후 자동로그인으로 뜨는 상태 변경
+            set({ loading: false });
             return data;
         }catch (err){
             set({

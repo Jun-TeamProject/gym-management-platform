@@ -3,6 +3,8 @@ package com.example.backend.user.entity;
 import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.membership.entity.Membership;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.backend.branch.entity.Branch;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -75,9 +77,16 @@ public class User implements UserDetails {
 
     private LocalDate birthdate;
 
+<<<<<<< HEAD
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
     private Membership membership;
+=======
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    @JsonIgnoreProperties({"users"})
+    private Branch branch;
+>>>>>>> b297ebe12410f23660cce8cefdef45a8352bc585
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

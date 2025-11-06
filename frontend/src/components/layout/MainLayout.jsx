@@ -47,7 +47,7 @@ function Sidebar({ open }) {
     >
       <div className="px-5 py-4 border-b">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white grid place-items-center">
+          <div className="w-8 h-10 rounded-lg bg-blue-600 text-white grid place-items-center">
             <DumbbellIcon className="w-5 h-5" />
           </div>
           <span className="font-extrabold text-gray-900">Gym Projector</span>
@@ -132,7 +132,7 @@ export default function MainLayout() {
                   로그아웃
                 </button>
                 {user.role === 'ADMIN' && (
-                  <Link to="/admin/users" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
+                  <Link to="/admin" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
                     관리자
                   </Link>
                 )}
