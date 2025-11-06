@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
+import { BranchApi } from "../services/BranchApi";
 
 function UserPlusIcon(props) {
   return (
@@ -20,14 +21,37 @@ export default function RegisterPage() {
     username: "",
     // phone: "",
     // role: "",
-    // branch_id: "",
+    branchId: "",
   });
+
+  const [branches, setBranches] = useState([]);
+  const [branchLoading, setBranchLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const response = await BranchApi.getAllBranches();
+        setBranches(response.data);
+      } catch (err) {
+        console.error("지점 목록 조회 실패:", err);
+        alert("지점 목록을 불러오는 데 실패했습니다.");
+      } finally {
+        setBranchLoading(false);
+      }
+    };
+    fetchBranches();
+  }, []);
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.branchId) {
+      alert("지점을 선택해주세요.");
+      return;
+    }
+
     try {
       await register(formData);
       alert("회원가입이 완료되었습니다!");
@@ -114,7 +138,7 @@ export default function RegisterPage() {
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-            </div>
+            </div> */}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -123,22 +147,24 @@ export default function RegisterPage() {
                 </label>
                 <select
                   id="branch-select"
-                  name="branch_id"
-                  value={formData.branch_id}
+                  name="branchId"
+                  value={formData.branchId}
                   onChange={handleChange}
                   required
+                  disabled={branchLoading}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
-                  <option value="">-- 지점 선택 --</option>
-                  <option value="1">서울</option>
-                  <option value="2">부산</option>
-                  <option value="3">인천</option>
+                  <option value=""> -- 지점 선택 -- </option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.branchName}
+                    </option>
+                  ))}
                 </select>
-              </div>
-
+              </div>     
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  역할(Role)
+                  등급
                 </label>
                 <select
                   id="role-select"
@@ -148,17 +174,14 @@ export default function RegisterPage() {
                   required
                   className="w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
-                  <option value="">-- Role 선택 --</option>
                   <option value="MEMBER">회원</option>
-                  <option value="TRAINER">트레이너</option>
-                  <option value="ADMIN">관리자</option>
                 </select>
               </div>
-            </div> */}
+            </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || branchLoading}
               className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? "회원가입 중..." : "회원가입"}
@@ -168,10 +191,16 @@ export default function RegisterPage() {
           <div className="my-6 h-px bg-gray-100" />
 
           <div className="flex justify-between text-sm text-gray-600">
-            <Link to="/" className="hover:text-gray-900 underline-offset-2 hover:underline">
+            <Link
+              to="/"
+              className="hover:text-gray-900 underline-offset-2 hover:underline"
+            >
               홈으로
             </Link>
-            <Link to="/login" className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline">
+            <Link
+              to="/login"
+              className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline"
+            >
               로그인
             </Link>
           </div>

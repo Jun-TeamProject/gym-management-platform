@@ -86,7 +86,7 @@ function Sidebar({ open }) {
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zM2 2v20l4-4h16V2H2z" /></svg>}
         />
         <Item
-          to="/payments"
+          to="/purchases"
           label="결제 내역"
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v2h20V6a2 2 0 0 0-2-2zM2 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10H2v8zm4-3h6v2H6v-2z" /></svg>}
         />
