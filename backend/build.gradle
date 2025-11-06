@@ -44,6 +44,9 @@ dependencies {
 	// Image Processing
 	implementation 'net.coobird:thumbnailator:0.4.19'
 
+	//Toss Webclient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	compileOnly 'org.projectlombok:lombok'

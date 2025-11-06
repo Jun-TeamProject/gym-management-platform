@@ -13,7 +13,8 @@ public class ProductResponse {
     private ProductType type;
     private String name;
     private int price;
-    private int durationMonths;
+    private Integer durationMonths;
+    private Integer sessionCount;
 
     public static ProductResponse of(Product product) {
         return ProductResponse.builder()
@@ -22,6 +23,7 @@ public class ProductResponse {
                 .name(product.getName())
                 .price(product.getPrice())
                 .durationMonths(product.getDurationMonths())
+                .sessionCount(product.getSessionCount())
                 .build();
 
     }

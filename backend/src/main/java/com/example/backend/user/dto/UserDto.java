@@ -23,6 +23,8 @@ public class UserDto {
     private String bio;
     private String gender;
     private LocalDate birthdate;
+    private Long branchId;
+    private String branchName;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
@@ -36,6 +38,8 @@ public class UserDto {
                 .bio(user.getBio())
                 .gender(user.getGender() != null ? user.getGender().name() : null)
                 .birthdate(user.getBirthdate())
+                .branchId(user.getBranch() != null ? user.getBranch().getId() : null)
+                .branchName(user.getBranch() != null ? user.getBranch().getBranchName() : null)
                 .build();
     }
 }

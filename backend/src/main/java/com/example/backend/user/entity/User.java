@@ -1,5 +1,7 @@
 package com.example.backend.user.entity;
 
+import com.example.backend.branch.entity.Branch;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -71,6 +73,11 @@ public class User implements UserDetails {
     private Gender gender;
 
     private LocalDate birthdate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    @JsonIgnoreProperties({"users"})
+    private Branch branch;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

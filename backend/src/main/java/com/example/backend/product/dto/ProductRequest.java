@@ -23,6 +23,7 @@ public class ProductRequest {
     @Min(value = 0, message = "가격은 0 이상이어야 합니다.")
     private int price;
 
-    @Min(value = 1, message = "기간은 1개월 이상이어야 합니다.")
-    private int durationMonths;
+    private Integer durationMonths;
+
+    private Integer sessionCount;
 }

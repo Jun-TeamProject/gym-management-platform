@@ -1,6 +1,6 @@
 import api from "./api";
 
-const PRODUCT_API_URL = "/products";
+const PRODUCT_API_URL = "/api/products";
 
 export const ProductApi = {
   getAllProducts: async () => {
@@ -11,11 +11,11 @@ export const ProductApi = {
     return api.post(PRODUCT_API_URL, productData);
   },
 
-  updateProduct: async (id, productData) => {
-    return api.put(`${PRODUCT_API_URL}/${id}`, productData);
+  updateProduct: async (productId, productData) => {
+    return api.put(`${PRODUCT_API_URL}/${productId}`, productData);
   },
 
-  deleteProduct: async (id) => {
-    return api.delete(`${PRODUCT_API_URL}/${id}`);
+  deleteProduct: async (productId) => {
+    return api.delete(`${PRODUCT_API_URL}/${productId}`);
   },
 };
