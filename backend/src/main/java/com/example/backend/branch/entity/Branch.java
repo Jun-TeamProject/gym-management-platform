@@ -26,6 +26,10 @@ public class Branch {
     private String location; // 지점 주소
     private String phone; // 연락처
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BranchType type;
+
     @OneToMany(mappedBy = "branch")
     @Builder.Default
     @JsonIgnore

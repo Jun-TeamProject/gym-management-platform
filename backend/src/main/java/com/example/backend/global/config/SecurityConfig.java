@@ -1,5 +1,6 @@
 package com.example.backend.global.config;
 
+import com.example.backend.global.exception.JwtAccessDeniedHandler;
 import com.example.backend.global.security.JwtAuthenticationEntryPoint;
 import com.example.backend.global.security.JwtAuthenticationFilter;
 import com.example.backend.global.security.OAuth2SuccessHandler;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final UserDetailsService userDetailsService;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -45,28 +47,26 @@ public class SecurityConfig {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers ->
+                        headers.frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/api/images/**",
-                                        "/api/**",
                                         "/oauth2/**",
                                         "/login/oauth2/**",
                                         "/h2-console/**",
                                         "/error"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/branches").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/api/branches/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/api/branches/**").hasRole("ADMIN")
+                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/branches").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/branches/**").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/branches/**").hasAuthority("ADMIN")
                                 .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN")
                                 .anyRequest().authenticated()
-                )
-                .headers(headers -> headers
-                                .frameOptions(frameOptions -> frameOptions.sameOrigin()) // 같은 출처(origin)에서의 프레임 허용
-                        // 또는 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler)
@@ -74,7 +74,10 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
