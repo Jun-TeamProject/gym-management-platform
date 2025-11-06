@@ -2,18 +2,16 @@ import attendService from "../services/attend";
 import authService from "../services/auth";
 import fetchAttendances from "./Calender";
 
-const attendanceButton = () => {
+const attendanceButton = ({ onRefresh }) => {
     const handleAttendanceCheck = async () => {
-        const currentUser = authService.getCurrentUser();
-
         try {
-            const userId = currentUser.id;
-            const result = await attendService.attend(userId); 
-
-            fetchAttendances();
+            const response = await attendService.attend();
+            //user_id와 날짜, 출석 상태를 확인 후 허용할지 말지. 추가할 수 있음.
+            if (onRefresh) {
+                onRefresh(); 
+            }
         } catch (error) {
-            alert("이미 출석체크를 하셨습니다.")
-            // console.error("출석 체크 실패:", error);
+            console.error("출석 체크 실패:", error);
         }
     }
     

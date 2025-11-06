@@ -7,18 +7,29 @@ import authService from '../services/auth';
 import calendarService from '../services/calendar';
 import AttendanceButton from './attendanceButton';
 import { useRef } from 'react';
+const getTodayYearMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1; 
 
+    return `${year}-${String(month).padStart(2, '0')}`;
+};
 const Calender = () => {
     const [events, setEvents] = useState([]);
     const [attendanceEvents, setAttendanceEvents] = useState([]);
     const [memoEvents, setMemoEvents] = useState([]);
-
+    const [currentMonthInfo,setCurrentMonthInfo] = useState(getTodayYearMonth);
     useEffect(() => {
         // fetchAttendances();
     }, []);
 
     const calendarRef = useRef(null);
     
+    const handleRefreshData = () => {
+        console.log(currentMonthInfo);
+        fetchAttendances(currentMonthInfo); 
+    };
+
     const handleDatesSet = (dateInfo) => {
         const dateObject = dateInfo.view.currentStart; 
     
@@ -40,19 +51,18 @@ const Calender = () => {
         // console.log(eventsOnDate.length);
         if (eventsOnDate.length > 0) {
             const firstTitle = eventsOnDate[0].title;
-            if((firstTitle === "출석" || firstTitle === "결석")&&(eventsOnDate.length < 2)){
+            if((firstTitle === "<출석>" || firstTitle === "<결석>")&&(eventsOnDate.length < 2)){
                 const title = prompt(`메모를 입력하세요: `);
                 if (title) {
                     // setEvents(prevEvents => [
                     //     ...prevEvents,
                     //     { title: title, date: info.dateStr}
                     // ]);
-                    await calendarService.update({date: info.dateStr},{memo: title});
+                    await calendarService.update(info.dateStr,{memo: title});
                 }
                 fetchAttendances(YearMonth);
                 return;
             }else{
-                alert("이미 메모가 존재합니다");
                 return; 
             }
             
@@ -74,7 +84,7 @@ const Calender = () => {
         const clickedDate = clickedEvent.startStr;
         // console.log(clickedDate)
         const YearMonth = clickedDate.substring(0,7);
-        if(clickedEvent.title === "출석" || clickedEvent.title === "결석") return;
+        if(clickedEvent.title === "<출석>" || clickedEvent.title === "<결석>") return;
         const newTitle = prompt(`수정할 내용을 입력하세요: `, clickedEvent.title);
 
         if(newTitle === ''){
@@ -107,8 +117,8 @@ const Calender = () => {
             }));
 
             setAttendanceEvents(events);
-
-            const memos = records.map(record => ({
+            
+            const memos = records.filter(record => record.memo).map(record => ({
                 // id: record.id, id필요없음.
                 start: record.logDate,
                 title: record.memo,
@@ -133,13 +143,13 @@ const Calender = () => {
                     right: 'next'
                 }}
                 ref={calendarRef}
-                events={[...attendanceEvents, ...memoEvents, ...events]}
+                events={[...attendanceEvents, ...memoEvents]}
                 datesSet={handleDatesSet}//얘가 제공하는 info랑
                 dateClick={handleDateClick}//얘랑 밑에꺼가 제공하는 info 형태가 다르니 주의..
                 eventClick={handleEventClick}
                 />
                 <div className="flex justify-center mt-8">
-                    <AttendanceButton />
+                    <AttendanceButton onRefresh={handleRefreshData}/>
                 </div>
             </div>
         </div>
