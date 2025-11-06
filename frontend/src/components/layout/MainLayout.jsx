@@ -47,7 +47,7 @@ function Sidebar({ open }) {
     >
       <div className="px-5 py-4 border-b">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white grid place-items-center">
+          <div className="w-8 h-10 rounded-lg bg-blue-600 text-white grid place-items-center">
             <DumbbellIcon className="w-5 h-5" />
           </div>
           <span className="font-extrabold text-gray-900">Gym Projector</span>
