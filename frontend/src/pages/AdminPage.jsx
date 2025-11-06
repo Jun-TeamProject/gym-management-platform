@@ -36,7 +36,7 @@ const AdminPage = () => {
         alert("role이 성공적으로 변경되었습니다.");
         fetchUsers();
     }
-    const availableRoles = ['MEMBER', 'TRAINER']; 
+    const availableRoles = ['MEMBER', 'TRAINER','ADMIN']; 
     return (
    <div className="bg-white p-6 rounded-2xl shadow border">   
     <div className="flex justify-between items-center mb-6">
@@ -86,18 +86,18 @@ const AdminPage = () => {
                         {user.email}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.membership?.endDate}
+                        {user.membership?.endDate || '멤버십 등록 x'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.membership?.ptCountRemaining}
+                        {user.membership?.ptCountRemaining || 0}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                         <select
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'TRAINER' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'TRAINER' ? 'bg-blue-100 text-blue-800' : user.role === 'ADMIN' ? 'bg-red-100 text-red-800': 'bg-green-100 text-green-800'}`}
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id,{newRole: e.target.value})}>
                             {availableRoles.map(roleOption => (
-                            <option key={roleOption} value={roleOption}>
+                            <option key={roleOption} value={roleOption} disabled={roleOption === 'ADMIN'}>
                             {roleOption}
                             </option>
                     ))}

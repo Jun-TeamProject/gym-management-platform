@@ -26,7 +26,7 @@ public class Membership {
 
     // ----- 연관 관계 (핵심) -----
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user; // 이용권 소유자 (1:1 관계 - ERD 기반)
 
@@ -60,11 +60,13 @@ public class Membership {
         Product product = payment.getProduct();
 
         LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusMonths(product.getDurationMonths());
+        LocalDate endDate = (product.getType() == Product.ProductType.Membership)
+                ? startDate.plusMonths(product.getDurationMonths())
+                : null;
 
         // 상품 타입이 PT인지 확인 (Product 엔티티의 Enum 이름에 따라 수정 필요)
         int ptCount = (product.getType() == Product.ProductType.PT)
-                ? product.getDurationMonths() // 예: 1개월(10회) 상품이면 10 (이 로직은 정책에 따라 변경)
+                ? product.getSessionCount() // 예: 1개월(10회) 상품이면 10 (이 로직은 정책에 따라 변경)
                 : 0;
 
         return Membership.builder()

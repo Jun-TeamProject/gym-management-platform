@@ -28,7 +28,7 @@ public class DailyLogService {
     @Transactional(readOnly = true)
     public List<DailyLogResponse> getMonthlyLogs(UserDetails userDetails, YearMonth yearMonth) {
         String email = userDetails.getUsername();
-
+        System.out.println(email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
@@ -36,7 +36,9 @@ public class DailyLogService {
         LocalDate endDate = yearMonth.atEndOfMonth();
 
         List<DailyLog> logs = dailyLogRepository.findAllByUserAndLogDateBetween(user, startDate, endDate);
-
+        System.out.println(logs);
+        System.out.println(startDate);
+        System.out.println(endDate);
         return logs.stream()
                 .map(DailyLogResponse::fromEntity)
                 .collect(Collectors.toList());

@@ -33,7 +33,7 @@ public class PaymentController {
      * API 1: 결제 준비 (React가 위젯 렌더링 전 호출)
      */
     @PostMapping("/prepare")
-    @PreAuthorize("hasRole('MEMBER')") // 회원만 결제 준비 가능
+    @PreAuthorize("hasAuthority('MEMBER')") // 회원만 결제 준비 가능
     public ResponseEntity<PaymentPrepareResponse> preparePayment(
             @Valid @RequestBody PaymentPrepareRequest request,
             Authentication authentication) {
@@ -57,7 +57,7 @@ public class PaymentController {
      * API 2: 결제 승인 (React가 Toss 리디렉션 후 호출)
      */
     @PostMapping("/confirm")
-    @PreAuthorize("hasRole('MEMBER')") // 회원만 결제 승인 가능
+    @PreAuthorize("hasAuthority('MEMBER')") // 회원만 결제 승인 가능
     public ResponseEntity<PaymentConfirmResponse> confirmPayment(
             @Valid @RequestBody PaymentConfirmRequest request,
             Authentication authentication) {
