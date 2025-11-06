@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -91,19 +92,43 @@ public class PaymentService {
             // 6. [!!! 헬스장 프로젝트 핵심 !!!]
             //    Membership (이용권) 생성 및 저장
             //    (TODO: 기존 이용권이 있는 경우 연장 처리 로직 필요)
-            Membership membership = Membership.create(payment);
-            membershipRepository.save(membership);
+            Product product = payment.getProduct();
 
-            log.info("결제 승인 및 회원권 발급 완료: orderId={}, membershipId={}", request.getOrderId(), membership.getId());
+            Optional<Membership> existingMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                    userId,
+                    product.getType());
 
+            if (existingMembership.isPresent()) {
+                Membership membership = existingMembership.get();
+                membership.extend(product);
+
+                membershipRepository.save(membership);
+                log.info("결제 승인 및 회원권 연장 완료: orderId={}, membershipId = {}", request.getOrderId(), membership.getId());
+            } else {
+                Membership membership = Membership.create(payment);
+                membershipRepository.save(membership);
+                log.info("결제 승인 및 회원권 발급 완료: orderId={}, membershipId = {}", request.getOrderId(), membership.getId());
+            }
             return PaymentConfirmResponse.of(payment);
-
         } catch (Exception e) {
             log.error("결제 승인 실패: orderId={}, error={}", request.getOrderId(), e.getMessage());
-            // (TODO: 결제 실패 시 Payment 상태 'CANCELED' 또는 'FAILED'로 변경 로직)
             throw new RuntimeException("결제 승인에 실패했습니다: " + e.getMessage());
         }
     }
+
+//            Membership membership = Membership.create(payment);
+//            membershipRepository.save(membership);
+//
+//            log.info("결제 승인 및 회원권 발급 완료: orderId={}, membershipId={}", request.getOrderId(), membership.getId());
+//
+//            return PaymentConfirmResponse.of(payment);
+//
+//        } catch (Exception e) {
+//            log.error("결제 승인 실패: orderId={}, error={}", request.getOrderId(), e.getMessage());
+//            // (TODO: 결제 실패 시 Payment 상태 'CANCELED' 또는 'FAILED'로 변경 로직)
+//            throw new RuntimeException("결제 승인에 실패했습니다: " + e.getMessage());
+//        }
+//    }
 
     private String generateOrderId() {
         // 헬스장 프로젝트용 주문번호

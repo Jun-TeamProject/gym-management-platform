@@ -31,6 +31,7 @@ public class Product {
 
     @Column
     private Integer sessionCount; //PT 횟수
+
     public enum ProductType {
         Membership, PT
     }
