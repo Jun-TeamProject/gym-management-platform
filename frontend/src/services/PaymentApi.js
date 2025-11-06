@@ -4,7 +4,7 @@ const PaymentApi = {
   // API 1: 결제 준비
   preparePayment: async (productId) => {
     // 벡엔드 POST /api/payments/prepare 호출
-    return api.poast("/api/payments/prepare", { productId });
+    return api.post("/api/payments/prepare", { productId });
   },
 
   //API 2: 결제 승인

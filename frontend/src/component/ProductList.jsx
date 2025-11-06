@@ -112,11 +112,11 @@ const ProductList = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {products.map((product) => (
               <tr
-                key={product.ProductId}
+                key={product.productId}
                 className="hover:bg-gray-50 transition"
               >
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  {product.ProductId}
+                  {product.productId}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {product.type === "Membership" ? "회원권" : "PT 이용권"}
