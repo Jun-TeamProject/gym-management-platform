@@ -6,7 +6,7 @@ const PaymentSuccessPage = () => {
   //   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("결제 승인 중입니다..");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(null);
 
   //중복 실행 방지 Ref
   const isConfirmedRef = useRef(false);
@@ -49,7 +49,7 @@ const PaymentSuccessPage = () => {
           }`
         );
         setIsSuccess(false);
-      }
+      } 
     };
 
     confirm();

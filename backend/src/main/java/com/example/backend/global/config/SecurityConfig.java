@@ -59,6 +59,8 @@ public class SecurityConfig {
                                         "/oauth2/**",
                                         "/login/oauth2/**",
                                         "/h2-console/**",
+                                        "/api/branches",
+                                        "/api/products",
                                         "/error"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
@@ -67,6 +69,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/branches/**").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/branches/**").hasAuthority("ADMIN")
                                 .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN")
+                                .requestMatchers("/api/users/trainers").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

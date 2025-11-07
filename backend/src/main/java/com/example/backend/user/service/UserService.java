@@ -1,8 +1,11 @@
 package com.example.backend.user.service;
 
+import com.example.backend.branch.entity.Branch;
+import com.example.backend.branch.repository.BranchRepository;
 import com.example.backend.user.dto.ProfileUpdateRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.entity.Gender;
+import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
 import com.example.backend.user.exception.UserAlreadyExistsException;
 import com.example.backend.user.repository.UserRepository;
@@ -12,11 +15,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final BranchRepository branchRepository;
 
     @Transactional(readOnly = true)
     public UserDto getMyProfile(UserDetails userDetails) {
@@ -64,8 +71,21 @@ public class UserService {
         if (request.getBirthdate() != null) {
             user.setBirthdate(request.getBirthdate());
         }
+        if (request.getBranchId() != null) {
+            Branch branch = branchRepository.findById(request.getBranchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + request.getBranchId()));
+            user.setBranch(branch);
+        }
 
         User updatedUser = userRepository.save(user);
         return UserDto.fromEntity(updatedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDto> getTrainers() {
+        return userRepository.findAllByRole(Role.TRAINER)
+                .stream()
+                .map(UserDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

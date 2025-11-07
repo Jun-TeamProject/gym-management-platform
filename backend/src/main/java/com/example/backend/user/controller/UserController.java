@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -29,5 +31,11 @@ public class UserController {
     ) {
         UserDto updatedUser = userService.updateMyProfile(userDetails, request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/trainers")
+    public ResponseEntity<List<UserDto>> getTrainersList() {
+        List<UserDto> trainers = userService.getTrainers();
+        return ResponseEntity.ok(trainers);
     }
 }
