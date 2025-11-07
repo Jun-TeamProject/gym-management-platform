@@ -4,13 +4,27 @@ import userService from '../services/user';
 const AdminPage = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const fetchUsers = async () => {
+    const [roleState, setRoleState] = useState('ALL');
+
+    // useEffect(() => {
+    // if (roleState && roleState !== 'ALL') {
+    //     console.log('업데이트된 rolestate:', roleState);
+    //     fetchUsers({role: roleState});
+    // }
+    // }, [roleState]);
+
+
+    const fetchUsers = async (options = {}) => {
         try {
-            const userData = await userService.getAllUsers({role: ['']});
+            const userData = await userService.getAllUsers(options);
+            if(userData == undefined){
+                return;
+            }
             setUsers(userData);
         } catch (error) {
             console.log("사용자 갱신 실패");
-        } finally {
+        } 
+        finally {
             setLoading(false);
         }
     };
@@ -28,7 +42,15 @@ const AdminPage = () => {
         }else{
             return;
         }
-        
+    }
+    const handleShowRole = async(role) => {
+        setRoleState(role);
+        if(role === 'ALL') {fetchUsers();}
+        else {
+            setRoleState(role);
+            console.log('rolestate:', roleState)
+            fetchUsers({role: `${role}`});
+        }
     }
     const handleRoleChange = async(userId, data) => {
         console.log(userId,data);
@@ -36,6 +58,7 @@ const AdminPage = () => {
         alert("role이 성공적으로 변경되었습니다.");
         fetchUsers();
     }
+    const ShowRoles = ['ALL', 'MEMBER', 'TRAINER','ADMIN'];
     const availableRoles = ['MEMBER', 'TRAINER','ADMIN']; 
     return (
    <div className="bg-white p-6 rounded-2xl shadow border">   
@@ -43,6 +66,18 @@ const AdminPage = () => {
       <h2 className="text-2xl font-extrabold text-gray-900">
         {" "} 
         사용자 목록 (ADMIN)</h2>
+        </div>
+        <div className="flex justify-end">
+            <select
+                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full'}`}
+                onChange={(e) => handleShowRole(e.target.value)}>
+                    value = {roleState}
+                    {ShowRoles.map(roleOption => (
+                    <option key={roleOption} value={roleOption}>
+                    {roleOption}
+                    </option>
+                ))}
+            </select>
         </div>
         <div className="overflow-x-auto rounded-lg border">
             <table className="min-w-full divide-y divide-gray-200">
