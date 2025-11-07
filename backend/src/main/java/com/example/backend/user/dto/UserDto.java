@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,9 +36,16 @@ public class UserDto {
     private int totalPtCountRemaining;
 
     public static UserDto fromEntity(User user) {
-        List<MembershipDto> membershipDtos = user.getMemberships().stream()
-                .map(MembershipDto::fromEntity)
-                .collect(Collectors.toList());
+        List<MembershipDto> membershipDtos;
+        if (user.getMemberships() == null) {
+            //
+            membershipDtos = Collections.emptyList();
+        } else {
+            //
+            membershipDtos = user.getMemberships().stream()
+                    .map(MembershipDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
 
         return UserDto.builder()
                 .id(user.getId())

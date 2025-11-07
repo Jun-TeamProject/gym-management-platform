@@ -73,6 +73,7 @@ public class User implements UserDetails {
     @Column(unique = true, length = 20)
     private String phoneNumber;
 
+    @Column(length = 500)
     private String bio;
 
     @Enumerated(EnumType.STRING)

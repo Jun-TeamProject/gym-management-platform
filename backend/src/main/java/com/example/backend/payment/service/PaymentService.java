@@ -6,6 +6,7 @@ import com.example.backend.payment.client.TossPaymentsApiClient;
 import com.example.backend.payment.dto.*;
 import com.example.backend.membership.entity.Membership;
 import com.example.backend.payment.entity.Payment;
+import com.example.backend.payment.entity.PaymentStatus;
 import com.example.backend.payment.repository.PaymentRepository;
 import com.example.backend.product.entity.Product;
 import com.example.backend.product.repository.ProductRepository;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -129,6 +132,16 @@ public class PaymentService {
 //            throw new RuntimeException("결제 승인에 실패했습니다: " + e.getMessage());
 //        }
 //    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentHistoryResponse> getMyPayments(Long userId) {
+
+        List<Payment> payments = paymentRepository.findAllByUserIdAndStatusOrderByApprovedAtDesc(userId, PaymentStatus.DONE);
+
+        return payments.stream()
+                .map(PaymentHistoryResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     private String generateOrderId() {
         // 헬스장 프로젝트용 주문번호
