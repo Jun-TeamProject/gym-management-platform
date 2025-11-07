@@ -27,6 +27,7 @@ public class DailyLogController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth
     ) {
+        System.out.println(yearMonth);
         List<DailyLogResponse> monthlyLogs = dailyLogService.getMonthlyLogs(userDetails, yearMonth);
         return ResponseEntity.ok(monthlyLogs);
     }

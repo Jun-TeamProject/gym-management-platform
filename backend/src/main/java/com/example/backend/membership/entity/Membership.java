@@ -3,6 +3,8 @@ package com.example.backend.membership.entity;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.product.entity.Product;
 import com.example.backend.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +37,7 @@ public class Membership {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
     private Product product; // 구매한 상품
 
     @OneToOne(fetch = FetchType.LAZY)

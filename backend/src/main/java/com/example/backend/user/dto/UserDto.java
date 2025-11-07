@@ -27,9 +27,13 @@ public class UserDto {
     private String bio;
     private String gender;
     private LocalDate birthdate;
+    private MembershipDto membership;
+
     private Long branchId;
     private String branchName;
     private List<MembershipDto> memberships;
+
+    private int totalPtCountRemaining;
 
     public static UserDto fromEntity(User user) {
         List<MembershipDto> membershipDtos;
