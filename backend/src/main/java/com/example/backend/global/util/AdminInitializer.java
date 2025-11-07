@@ -137,7 +137,7 @@ public class AdminInitializer implements CommandLineRunner {
                     .branch(branch)
                     .build();
             userRepository.save(trainer2);
-            log.info("✅ TRAINER 2 . (Name: 양현승, : {})", trainer2.getRealUsername(), branch.getBranchName());
+            log.info("✅ TRAINER 2 . (Name: 양치승, : {})", trainer2.getRealUsername(), branch.getBranchName());
         }
     }
 
