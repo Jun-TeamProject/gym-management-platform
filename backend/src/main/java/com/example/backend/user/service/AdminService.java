@@ -42,28 +42,40 @@ public class AdminService {
 
         return UserDto.fromEntity(updatedUser);
     }
-    private MembershipDto convertToMembershipDto(Membership membershipEntity) {
-        if (membershipEntity == null) return null;
-
-        return MembershipDto.builder()
-                .id(membershipEntity.getId())
-                .startDate(membershipEntity.getStartDate())
-                .endDate(membershipEntity.getEndDate())
-                .ptCountRemaining(membershipEntity.getPtCountRemaining())
-//                .status(membershipEntity.getStatus())
-                .build();
-    }
 
     private UserDto convertToUserDto(User user) {
-        MembershipDto membershipDto = convertToMembershipDto(user.getMembership());
+        List<Membership> allMemberships = user.getMemberships();
 
-        return UserDto.builder()
-                .id(user.getId())
-                .username(user.getRealUsername())
-                .role(user.getRole().getKey())
-                .email(user.getEmail())
-                .membership(membershipDto)
-                .build();
+        int totalPtCountRemaining = 0;
+        Membership ActiveMembershipEntity = null;
+
+        if (allMemberships != null) {
+            for (Membership membership : allMemberships) {
+                if (!membership.getStatus().name().equals("ACTIVE")) {
+                    continue;
+                }
+
+                //pt
+                if (membership.getStartDate().isEqual(membership.getEndDate())) {
+                    totalPtCountRemaining = membership.getPtCountRemaining();
+                //일반멤버십
+                } else {
+                    ActiveMembershipEntity = membership;
+                }
+            }
+        }
+
+        UserDto userDto = UserDto.fromEntity(user);
+
+        //pt가 아닌 멤버십을 front로 보내주기 위해 dto로 변환
+        MembershipDto latestMembershipDto = ActiveMembershipEntity != null
+                ? MembershipDto.fromEntity(ActiveMembershipEntity)
+                : null;
+
+        userDto.setMembership(latestMembershipDto);
+        userDto.setTotalPtCountRemaining(totalPtCountRemaining);
+
+        return userDto;
     }
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(String role) {
@@ -74,7 +86,7 @@ public class AdminService {
         } else {
             try {
                 Role filterRole = Role.valueOf(role.toUpperCase());
-                users = userRepository.findAllByRole(filterRole);
+                users = userRepository.findAllByRoleWithMemberships(filterRole);
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid role value: " + role);
             }

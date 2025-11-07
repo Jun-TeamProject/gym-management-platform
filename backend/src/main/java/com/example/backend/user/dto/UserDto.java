@@ -32,6 +32,8 @@ public class UserDto {
     private String branchName;
     private List<MembershipDto> memberships;
 
+    private int totalPtCountRemaining;
+
     public static UserDto fromEntity(User user) {
         List<MembershipDto> membershipDtos = user.getMemberships().stream()
                 .map(MembershipDto::fromEntity)

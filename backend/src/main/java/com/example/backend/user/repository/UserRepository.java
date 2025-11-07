@@ -17,8 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     Optional<User> findByProviderAndProviderId(Provider provider, String providerId);
 
-//    List<User> findAllByRole(Role role);
+    List<User> findAllByRole(Role role);
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.membership WHERE u.role = :role")
-    List<User> findAllByRole(@Param("role") Role role);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.memberships WHERE u.role = :role")
+    List<User> findAllByRoleWithMemberships(@Param("role") Role role);
 }

@@ -89,7 +89,7 @@ const AdminPage = () => {
                         {user.membership?.endDate || '멤버십 등록 x'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.membership?.ptCountRemaining || 0}
+                        {user.totalPtCountRemaining || 0}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                         <select

@@ -2,6 +2,7 @@ package com.example.backend.user.entity;
 
 import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.membership.entity.Membership;
+import com.example.backend.payment.entity.Payment;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.example.backend.branch.entity.Branch;
 import com.example.backend.membership.entity.Membership;
@@ -79,9 +80,6 @@ public class User implements UserDetails {
 
     private LocalDate birthdate;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Membership membership;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
@@ -90,6 +88,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Membership> memberships;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
