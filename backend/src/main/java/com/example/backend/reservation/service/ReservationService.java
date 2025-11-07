@@ -3,6 +3,7 @@ package com.example.backend.reservation.service;
 import com.example.backend.reservation.dto.ReservationRequest;
 import com.example.backend.reservation.dto.ReservationResponse;
 import com.example.backend.reservation.entity.Reservation;
+import com.example.backend.reservation.entity.Status;
 import com.example.backend.reservation.repository.ReservationRepository;
 import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -31,7 +33,6 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
-
         // 트레이너 존재 확인
         User trainer = userRepository.findById(request.getTrainerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
@@ -46,10 +47,32 @@ public class ReservationService {
             throw new UnauthorizedException("Only members can create reservations");
         }
 
+        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime endTime = request.getEndTime();
+
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("시작시간이 이미 지났습니다.");
+        }
+
+        if (startTime.isAfter(LocalDateTime.now().plusWeeks(2))){
+            throw new IllegalArgumentException("2weeks");
+        }
+
+        if (!endTime.isAfter(startTime)){
+            throw new IllegalArgumentException("마치는 시간이 시작 시간보다 빠릅니다.");
+        }
+
+        boolean isOverlapping = reservationRepository.existsOverlappingReservation(
+                trainer.getId(), startTime, endTime
+        );
+        if (isOverlapping) {
+            throw new IllegalArgumentException("중복된 타임입니다.");
+        }
+
         Reservation reservation = Reservation.builder()
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .status(request.getStatus())
+                .startTime(startTime)
+                .endTime(endTime)
+                .status(Status.PENDING)
                 .memo(request.getMemo())
                 .member(currentUser)
                 .trainer(trainer)
@@ -123,6 +146,26 @@ public class ReservationService {
         Page<Reservation> reservations = reservationRepository.findByTrainerId(userId, pageable);
         return reservations.map(ReservationResponse::fromEntity);
     }
+
+    // 트레이너 받은 예약 확정
+    public ReservationResponse confirmReservation (Long reservationId) {
+        User currentUser = authenticationService.getCurrentUser();
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        if (!reservation.getTrainer().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+            throw new UnauthorizedException("You are not authorized to confirm this reservation");
+        }
+
+        if (reservation.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException(" PENDING ");
+        }
+
+        reservation.setStatus(Status.RESERVED);
+        return ReservationResponse.fromEntity(reservation);
+    }
+
 
 
     // 예약 수정

@@ -27,4 +27,6 @@ public class ProfileUpdateRequest {
 
     @Past(message = "Birthdate must be in the past")
     private LocalDate birthdate;
+
+    private Long branchId;
 }

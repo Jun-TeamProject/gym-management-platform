@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import profileService from "../../services/profileService";
+import { BranchApi } from "../../services/BranchApi";
 
 const inputClass =
   "w-full rounded-lg border border-gray-300 px-4 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400";
@@ -14,11 +15,13 @@ const formatGender = (gender) => {
   if (gender === "FEMALE") return "여성";
   if (gender === "OTHER") return "기타";
   return "미입력";
-}
+};
 
 const ProfileForm = ({ profileData, onProfileUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [branches, setBranches] = useState([]);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,6 +30,7 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
     gender: "",
     birthdate: "",
     bio: "",
+    branchId: "",
   });
 
   useEffect(() => {
@@ -39,9 +43,24 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
         gender: profileData.gender || "OTHER",
         birthdate: profileData.birthdate || "",
         bio: profileData.bio || "",
+        branchId: profileData.branchId || "",
       });
     }
   }, [profileData]);
+
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const response = await BranchApi.getAllBranches();
+        setBranches(response.data);
+      } catch (err) {
+        console.error("지점 목록 조회 실패: ", err);
+      }
+    };
+    if (isEditing) {
+      fetchBranches();
+    }
+  }, [isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,8 +70,13 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const dataToSend = {
+      ...formData,
+      branchId: formData.branchId ? Number(formData.branchId) : null,
+    };
     try {
-      const updatedProfile = await profileService.updateMyProfile(formData);
+      const updatedProfile = await profileService.updateMyProfile(dataToSend);
       onProfileUpdate(updatedProfile);
       alert("프로필이 저장되었습니다.");
       setIsEditing(false);
@@ -163,6 +187,25 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
               <option value="OTHER">기타</option>
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              지점
+            </label>
+            <select
+              name="branchId"
+              value={formData.branchId}
+              onChange={handleChange}
+              className={inputClass}
+              // required
+            >
+              <option value="">-- 지점을 선택하세요 --</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.branchName}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -230,6 +273,14 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
               {formData.fullName || "미입력"}
             </p>
           </div>
+          {/* <div>
+            <label className="block text-sm font-medium text-gray-500">
+              회원등급
+            </label>
+            <p className="text-lg text-gray-900 p-2">
+              {formData.role || "미입력"}
+            </p>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-gray-500">
               생년월일
@@ -246,6 +297,15 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
               {formatGender(formData.gender) || "미입력"}
             </p>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-500">
+              지점
+            </label>
+            <p className="text-lg text-gray-900 p-2">
+              {profileData.branchName || "미입력"}
+            </p>
+          </div>
         </div>
       </div>
       <div>
@@ -256,7 +316,7 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
           {formData.bio || "미입력"}
         </p>
       </div>
-      
+
       <div className="flex justify-end pt-4">
         <button
           onClick={() => setIsEditing(true)}
