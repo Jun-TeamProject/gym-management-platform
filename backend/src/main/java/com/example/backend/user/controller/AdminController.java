@@ -1,5 +1,6 @@
 package com.example.backend.user.controller;
 
+import com.example.backend.payment.dto.PaymentHistoryResponse;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.service.AdminService;
@@ -43,5 +44,13 @@ public class AdminController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         adminService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/payments")
+    public ResponseEntity<List<PaymentHistoryResponse>> getPaymentHistory(
+            @RequestParam(defaultValue = "DAY") String period
+    ) {
+        List<PaymentHistoryResponse> history = adminService.getPaymentHistory(period);
+        return ResponseEntity.ok(history);
     }
 }
