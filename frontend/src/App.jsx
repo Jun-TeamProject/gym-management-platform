@@ -30,7 +30,7 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
 
-          <Route path="/posts" element={<PostsPage />} />
+          <Route path="/community" element={<PostsPage />} />
 
           <Route
             element={
