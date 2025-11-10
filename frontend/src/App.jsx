@@ -16,6 +16,7 @@ import ProductPurchaseList from "./pages/ProductPurchaseList";
 import AdminOverview from "./pages/AdminOverview";
 import Calendar from "./component/Calender";
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
+import PostsPage from "./pages/PostsPage";
 import ReservationPage from "./pages/ReservationPage";
 import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
 
@@ -28,6 +29,8 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
+
+          <Route path="/posts" element={<PostsPage />} />
 
           <Route
             element={

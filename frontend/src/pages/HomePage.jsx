@@ -172,13 +172,13 @@ export default function HomePage() {
               to="/register"
               className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
             >
-              무료로 시작
+              회원가입
             </Link>
             <Link
               to="/login"
               className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
             >
-              데모 로그인
+              로그인
             </Link>
           </div>
         </div>
