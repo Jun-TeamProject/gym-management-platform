@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuthStore(); 
-
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <>
@@ -81,11 +80,13 @@ export default function HomePage() {
               title: "출석 체크",
               desc: "QR/원클릭 출석, 월간 기록 열람.",
               emoji: "✅",
+              link: "/attendances",
             },
             {
               title: "PT 예약",
               desc: "트레이너 선택, 일정 조율, 알림까지.",
               emoji: "📅",
+              link: "/reservations",
             },
             {
               title: "이용권/결제",
@@ -100,7 +101,7 @@ export default function HomePage() {
             },
             {
               title: "지점 관리",
-              desc: "지점별 트레이너/시설/매출 통계.",
+              desc: "지점별 트레이너/시설.",
               emoji: "📈",
             },
             { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
@@ -112,7 +113,29 @@ export default function HomePage() {
                 <p className="mt-1 text-gray-600 text-sm">{f.desc}</p>
               </>
             );
+            if (f.title === "출석 체크") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
             if (f.title === "이용권/결제") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "PT 예약") {
               return (
                 <Link
                   key={f.title}
