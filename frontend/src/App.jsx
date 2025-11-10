@@ -19,6 +19,7 @@ import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 import PostsPage from "./pages/PostsPage";
 import ReservationPage from "./pages/ReservationPage";
 import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
+import UserDetailPage from "./pages/UserDetailPage";
 
 const App = () => {
   return (
@@ -39,8 +40,8 @@ const App = () => {
           >
             <Route path="/myprofile" element={<MyProfile />} />
             <Route path="/products" element={<ProductPurchaseList />} />
-            <Route path="/attendances" element={<Calendar />}/>
-            <Route path="/reservations" element={<ReservationPage />}/>
+            <Route path="/attendances" element={<Calendar />} />
+            <Route path="/reservations" element={<ReservationPage />} />
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}
@@ -58,7 +59,14 @@ const App = () => {
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
             <Route path="/admin/overview" element={<AdminOverview />} />
-            <Route path="/admin/payments" element={<PaymentHistoryAdminPage />} />
+            <Route
+              path="/admin/payments"
+              element={<PaymentHistoryAdminPage />}
+            />
+            <Route
+              path="/admin/users/detail/:userId"
+              element={<UserDetailPage />}
+            />
 
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>

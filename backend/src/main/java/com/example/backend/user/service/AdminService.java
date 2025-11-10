@@ -2,10 +2,13 @@ package com.example.backend.user.service;
 
 import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.membership.entity.Membership;
+import com.example.backend.membership.repository.MembershipRepository;
 import com.example.backend.payment.dto.PaymentHistoryResponse;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.payment.entity.PaymentStatus;
 import com.example.backend.payment.repository.PaymentRepository;
+import com.example.backend.product.entity.Product;
+import com.example.backend.user.dto.AdminMembershipUpdateRequest;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.entity.Role;
@@ -13,6 +16,7 @@ import com.example.backend.user.entity.User;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +27,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminService {
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
+    private final MembershipRepository membershipRepository;
 
     @Transactional
     public UserDto changUserRole(Long userId, RoleChangeRequest request) {
@@ -53,34 +59,33 @@ public class AdminService {
     private UserDto convertToUserDto(User user) {
         List<Membership> allMemberships = user.getMemberships();
 
-        int totalPtCountRemaining = 0;
-        Membership ActiveMembershipEntity = null;
+        Membership activeMembership = null;
+        Membership activePt = null;
 
         if (allMemberships != null) {
             for (Membership membership : allMemberships) {
-                if (!membership.getStatus().name().equals("ACTIVE")) {
+                if (membership.getStatus() != Membership.MembershipStatus.ACTIVE) {
                     continue;
                 }
-
                 //pt
-                if (membership.getStartDate().isEqual(membership.getEndDate())) {
-                    totalPtCountRemaining = membership.getPtCountRemaining();
+                if (membership.getProduct().getType() == Product.ProductType.PT) {
+                    activePt = membership;
                 //일반멤버십
                 } else {
-                    ActiveMembershipEntity = membership;
+                    activeMembership = membership;
                 }
             }
         }
 
         UserDto userDto = UserDto.fromEntity(user);
 
-        //pt가 아닌 멤버십을 front로 보내주기 위해 dto로 변환
-        MembershipDto latestMembershipDto = ActiveMembershipEntity != null
-                ? MembershipDto.fromEntity(ActiveMembershipEntity)
-                : null;
+//        //pt가 아닌 멤버십을 front로 보내주기 위해 dto로 변환
+//        MembershipDto latestMembershipDto = ActiveMembershipEntity != null
+//                ? MembershipDto.fromEntity(ActiveMembershipEntity)
+//                : null;
 
-        userDto.setMembership(latestMembershipDto);
-        userDto.setTotalPtCountRemaining(totalPtCountRemaining);
+        userDto.setMembership(activeMembership != null ? MembershipDto.fromEntity(activeMembership) : null);
+        userDto.setPtMembership(activePt != null ? MembershipDto.fromEntity(activePt) : null);
 
         return userDto;
     }
@@ -153,5 +158,23 @@ public class AdminService {
         return payments.stream()
                 .map(PaymentHistoryResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateMembership(Long membershipId, AdminMembershipUpdateRequest request){
+        Membership membership = membershipRepository.findById(membershipId)
+                .orElseThrow(() -> new EntityNotFoundException("Membership not found with id: " + membershipId));
+
+        if (request.getEndDate() != null) {
+            membership.setEndDate(request.getEndDate());
+            log.info(" ID: {} : {}", membershipId, request.getEndDate());
+        }
+
+        if (request.getPtCountRemaining() != null) {
+            membership.setPtCountRemaining(request.getPtCountRemaining());
+            log.info(" ID: {} PT : {} ", membershipId, request.getPtCountRemaining());
+        }
+
+        membershipRepository.save(membership);
     }
 }

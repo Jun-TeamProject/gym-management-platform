@@ -1,12 +1,14 @@
 package com.example.backend.user.controller;
 
 import com.example.backend.payment.dto.PaymentHistoryResponse;
+import com.example.backend.user.dto.AdminMembershipUpdateRequest;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,15 @@ public class AdminController {
     ) {
         UserDto updatedUser = adminService.changUserRole(userId, request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping("/memberships/{membershipId}")
+    public ResponseEntity<Void> updateMembership(
+            @PathVariable Long membershipId,
+            @Valid @RequestBody AdminMembershipUpdateRequest request
+    ){
+        adminService.updateMembership(membershipId, request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/users")

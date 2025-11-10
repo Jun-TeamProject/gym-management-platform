@@ -1,3 +1,4 @@
+import MembershipInfo from "../components/profile/MembershipInfo";
 import api from "./api";
 
 export const AdminApi = {
@@ -18,4 +19,12 @@ export const AdminApi = {
       params: { period },
     });
   },
+
+  getUserById: async (userId) => {
+    return api.get(`/api/admin/users/${userId}`);
+  },
+
+  updateMembership: async (MembershipId, updateData) => {
+    return api.put(`/api/admin/memberships/${MembershipId}`, updateData);
+  }
 };

@@ -28,6 +28,7 @@ public class UserDto {
     private String gender;
     private LocalDate birthdate;
     private MembershipDto membership;
+    private MembershipDto ptMembership;
 
     private Long branchId;
     private String branchName;
