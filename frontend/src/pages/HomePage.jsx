@@ -77,10 +77,10 @@ export default function HomePage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: "출석 체크",
-              desc: "QR/원클릭 출석, 월간 기록 열람.",
-              emoji: "✅",
-              link: "/attendances",
+              title: "프로필",
+              desc: "회원 프로필 수정, 게시글·댓글.",
+              emoji: "👥",
+              link: "/myprofile",
             },
             {
               title: "PT 예약",
@@ -89,22 +89,39 @@ export default function HomePage() {
               link: "/reservations",
             },
             {
+              title: "출석 체크",
+              desc: "QR/원클릭 출석, 월간 기록 열람.",
+              emoji: "✅",
+              link: "/attendances",
+            },
+
+            {
               title: "이용권/결제",
               desc: "헬스권·PT권 관리, PG 연동 승인.",
               emoji: "💳",
               link: "/products",
             },
-            {
-              title: "프로필/커뮤니티",
-              desc: "회원 프로필 수정, 게시글·댓글.",
-              emoji: "👥",
-            },
+
             {
               title: "지점 관리",
               desc: "지점별 트레이너/시설.",
               emoji: "📈",
             },
+
             { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
+
+            {
+              title: "커뮤니티",
+              desc: "게시글 작성, 댓글, 좋아요. 운동정보 공유.",
+              emoji: "💬",
+              link: "/community",
+            },
+
+            {
+              title: "AI 추천 운동",
+              desc: "개인 맞춤 운동 루틴 생성.",
+              emoji: "🤖",
+            },
           ].map((f) => {
             const cardContent = (
               <>
@@ -136,6 +153,61 @@ export default function HomePage() {
               );
             }
             if (f.title === "PT 예약") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "커뮤니티") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "AI 추천 운동") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "프로필") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "지점 관리") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "알림") {
               return (
                 <Link
                   key={f.title}

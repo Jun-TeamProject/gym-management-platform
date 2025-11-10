@@ -61,7 +61,7 @@ export default function Sidebar({ open }) {
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4l-2-2-8 8-3-3-2 2zM2 20h20v2H2z" /></svg>}
         />
         <Item
-          to="/posts"
+          to="/community"
           label="커뮤니티"
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zM2 2v20l4-4h16V2H2z" /></svg>}
         />
