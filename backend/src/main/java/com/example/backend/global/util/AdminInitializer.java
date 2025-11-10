@@ -129,7 +129,7 @@ public class AdminInitializer implements CommandLineRunner {
         final String TRAINER2_EMAIL = "trainer2@trainer.com";
         if (userRepository.findByEmail(TRAINER2_EMAIL).isEmpty()) {
             User trainer2 = User.builder()
-                    .username("양현승")
+                    .username("양치승")
                     .email(TRAINER2_EMAIL)
                     .password(passwordEncoder.encode("trainer1234"))
                     .provider(Provider.LOCAL)
