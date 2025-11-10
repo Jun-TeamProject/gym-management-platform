@@ -66,5 +66,6 @@ export default function PostForm({ initial, onSubmit, onCancel, busy }) {
         </button>
       </div>
     </form>
+    
   );
 }
