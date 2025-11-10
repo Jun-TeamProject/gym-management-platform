@@ -107,6 +107,15 @@ public class Membership {
         this.product = product;
     }
 
-    // (추가) 이용권 연장, PT 횟수 차감 등의 비즈니스 메서드
+    public boolean usePtSession() {
+        if (this.product.getType() != Product.ProductType.PT || this.ptCountRemaining <= 0) {
+            return false;
+        }
+
+        this.ptCountRemaining -= 1;
+        return true;
+    }
+
+    // (추가) 이용권 연장 등의 비즈니스 메서드
 }
 

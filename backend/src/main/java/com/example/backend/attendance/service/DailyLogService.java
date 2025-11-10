@@ -5,6 +5,9 @@ import com.example.backend.attendance.dto.MemoUpdateRequest;
 import com.example.backend.attendance.entity.AttendanceStatus;
 import com.example.backend.attendance.entity.DailyLog;
 import com.example.backend.attendance.repository.DailyLogRepository;
+import com.example.backend.membership.entity.Membership;
+import com.example.backend.membership.repository.MembershipRepository;
+import com.example.backend.product.entity.Product;
 import com.example.backend.user.entity.User;
 import com.example.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class DailyLogService {
     private final DailyLogRepository dailyLogRepository;
     private final UserRepository userRepository;
+    private final MembershipRepository membershipRepository;
 
     @Transactional(readOnly = true)
     public List<DailyLogResponse> getMonthlyLogs(UserDetails userDetails, YearMonth yearMonth) {
@@ -72,6 +76,33 @@ public class DailyLogService {
         dailyLog.setStatus(status);
 
         dailyLogRepository.save(dailyLog);
+    }
+
+    public DailyLogResponse checkInForPtSession(UserDetails userDetails, LocalDate date) {
+        String email = userDetails.getUsername();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                user.getId(),
+                Product.ProductType.PT
+        ).orElseThrow(() -> new EntityNotFoundException("Membership not found"));
+
+        boolean usePtSuccess = ptMembership.usePtSession();
+
+        if (!usePtSuccess) {
+            throw new IllegalArgumentException("남은 PT 횟수가 없습니다.");
+        }
+
+        DailyLog dailyLog = dailyLogRepository.findByUserAndLogDate(user, date)
+                .orElseGet(() -> createNewDailyLog(user, date));
+
+        dailyLog.setStatus(AttendanceStatus.PRESENT);
+
+        DailyLog savedLog = dailyLogRepository.save(dailyLog);
+
+        return DailyLogResponse.fromEntity(savedLog);
     }
 
     private DailyLog createNewDailyLog(User user, LocalDate date) {

@@ -4,9 +4,11 @@ import com.example.backend.attendance.dto.DailyLogResponse;
 import com.example.backend.attendance.dto.MemoUpdateRequest;
 import com.example.backend.attendance.entity.AttendanceStatus;
 import com.example.backend.attendance.service.DailyLogService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,5 +55,24 @@ public class DailyLogController {
         );
 
         return ResponseEntity.ok(today + "출석 체크 완료!");
+    }
+
+    @PostMapping("/pt-check-in")
+    public ResponseEntity<?> checkInForPt(@AuthenticationPrincipal UserDetails userDetails) {
+        LocalDate today = LocalDate.now();
+
+        try {
+            DailyLogResponse response = dailyLogService.checkInForPtSession(userDetails, today);
+
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
 }
