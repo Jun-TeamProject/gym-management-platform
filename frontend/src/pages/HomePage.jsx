@@ -80,13 +80,13 @@ export default function HomePage() {
               title: "출석 체크",
               desc: "QR/원클릭 출석, 월간 기록 열람.",
               emoji: "✅",
-              link: "attendances",
+              link: "/attendances",
             },
             {
               title: "PT 예약",
               desc: "트레이너 선택, 일정 조율, 알림까지.",
               emoji: "📅",
-              link: "reservations",
+              link: "/reservations",
             },
             {
               title: "이용권/결제",
