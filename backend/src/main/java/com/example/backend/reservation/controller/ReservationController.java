@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -73,6 +74,15 @@ public class ReservationController {
             @Valid @RequestBody ReservationRequest request
     ) {
         ReservationResponse response = reservationService.updateReservation(reservationId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{reservationId}/confirm")
+    @PreAuthorize("hasAuthority('TRAINER')")
+    public ResponseEntity<ReservationResponse> confirmReservation(
+            @PathVariable Long reservationId
+    ){
+        ReservationResponse response = reservationService.confirmReservation(reservationId);
         return ResponseEntity.ok(response);
     }
 

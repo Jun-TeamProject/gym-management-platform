@@ -2,6 +2,10 @@ package com.example.backend.user.service;
 
 import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.membership.entity.Membership;
+import com.example.backend.payment.dto.PaymentHistoryResponse;
+import com.example.backend.payment.entity.Payment;
+import com.example.backend.payment.entity.PaymentStatus;
+import com.example.backend.payment.repository.PaymentRepository;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.entity.Role;
@@ -12,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminService {
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public UserDto changUserRole(Long userId, RoleChangeRequest request) {
@@ -117,5 +124,34 @@ public class AdminService {
         }
 
         userRepository.delete(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentHistoryResponse> getPaymentHistory(String period) {
+        LocalDateTime startDate;
+        LocalDate now = LocalDate.now();
+
+        switch (period.toUpperCase()) {
+            case "DAY":
+                startDate = now.atStartOfDay();
+                break;
+            case "WEEK":
+                startDate = now.minusWeeks(1).atStartOfDay();
+                break;
+            case "MONTH":
+                startDate = now.minusMonths(1).atStartOfDay();
+                break;
+            default:
+                startDate = now.minusYears(1).atStartOfDay();
+        }
+
+        List<Payment> payments = paymentRepository.findAllByStatusAndApprovedAtAfterOrderByApprovedAtDesc(
+                PaymentStatus.DONE,
+                startDate
+        );
+
+        return payments.stream()
+                .map(PaymentHistoryResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 }

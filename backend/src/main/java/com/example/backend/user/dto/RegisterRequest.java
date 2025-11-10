@@ -22,4 +22,5 @@ public class RegisterRequest {
 
     @NotNull(message = "Branch is required")
     private Long branchId;
+
 }
