@@ -216,7 +216,7 @@ public class ReservationService {
 
         return ReservationResponse.fromEntity(reservation);
     }
-    
+
     // 예약 수정
     public ReservationResponse updateReservation(Long reservationId, ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
@@ -272,6 +272,7 @@ public class ReservationService {
                 .message(message)
                 .isRead(false)
                 .type(type)
+                .relatedId(reservationId)
                 .build();
 
         Notification savedNotification = notificationRepository.save(notification);
