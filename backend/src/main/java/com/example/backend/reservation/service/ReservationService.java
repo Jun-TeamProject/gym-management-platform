@@ -2,6 +2,11 @@ package com.example.backend.reservation.service;
 
 import com.example.backend.membership.entity.Membership;
 import com.example.backend.membership.repository.MembershipRepository;
+import com.example.backend.notification.dto.NotificationResponse;
+import com.example.backend.notification.entity.Notification;
+import com.example.backend.notification.entity.NotificationType;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.notification.service.SseEmitterService;
 import com.example.backend.product.entity.Product;
 import com.example.backend.reservation.dto.ReservationRequest;
 import com.example.backend.reservation.dto.ReservationResponse;
@@ -22,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -34,6 +40,8 @@ public class ReservationService {
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
+    private final NotificationRepository notificationRepository;
+    private final SseEmitterService sseEmitterService;
 
     public ReservationResponse createReservation(ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
@@ -83,6 +91,19 @@ public class ReservationService {
                 .build();
 
         reservation = reservationRepository.save(reservation);
+
+        String message = String.format("%s 회원님이 %s PT 예약을 신청했습니다.",
+                currentUser.getRealUsername(),
+                reservation.getStartTime().format(DateTimeFormatter.ofPattern("M/d HH:mm"))
+        );
+
+        sendReservationNotification(
+                trainer,
+                message,
+                NotificationType.RESERVATION_REQUEST,
+                reservation.getId()
+        );
+
         return ReservationResponse.fromEntity(reservation);
     }
 
@@ -180,11 +201,22 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.RESERVED);
+
+        String message = String.format("%s 트레이너가 %s PT 예약을 승인했습니다.",
+                reservation.getTrainer().getRealUsername(),
+                reservation.getStartTime().format(DateTimeFormatter.ofPattern("M/d HH:mm"))
+        );
+
+        sendReservationNotification(
+                reservation.getMember(),
+                message,
+                NotificationType.RESERVATION_CONFIRMED,
+                reservation.getId()
+        );
+
         return ReservationResponse.fromEntity(reservation);
     }
-
-
-
+    
     // 예약 수정
     public ReservationResponse updateReservation(Long reservationId, ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
@@ -232,5 +264,21 @@ public class ReservationService {
         return currentUser.getRole() == Role.ADMIN ||
                 reservation.getMember().getId().equals(currentUser.getId()) ||
                 reservation.getTrainer().getId().equals(currentUser.getId());
+    }
+
+    private void sendReservationNotification(User user, String message, NotificationType type, Long reservationId) {
+        Notification notification = Notification.builder()
+                .user(user)
+                .message(message)
+                .isRead(false)
+                .type(type)
+                .build();
+
+        Notification savedNotification = notificationRepository.save(notification);
+
+        NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
+        sseEmitterService.sendToUser(user.getId(), response);
+
+        log.info("SSE notification sent to user {} for type {}", user.getId(), type);
     }
 }
