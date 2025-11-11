@@ -1,5 +1,8 @@
 package com.example.backend.reservation.service;
 
+import com.example.backend.membership.entity.Membership;
+import com.example.backend.membership.repository.MembershipRepository;
+import com.example.backend.product.entity.Product;
 import com.example.backend.reservation.dto.ReservationRequest;
 import com.example.backend.reservation.dto.ReservationResponse;
 import com.example.backend.reservation.entity.Reservation;
@@ -30,6 +33,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
+    private final MembershipRepository membershipRepository;
 
     public ReservationResponse createReservation(ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
@@ -160,6 +164,19 @@ public class ReservationService {
 
         if (reservation.getStatus() != Status.PENDING) {
             throw new IllegalArgumentException(" PENDING ");
+        }
+
+        User member = reservation.getMember();
+
+        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                member.getId(),
+                Product.ProductType.PT
+        ).orElseThrow(() -> new IllegalStateException("해당 회원은 활성화된 PT 이용권이 없습니다."));
+
+        boolean usePtSuccess = ptMembership.usePtSession();
+
+        if (!usePtSuccess) {
+            throw new IllegalStateException("남은 PT 횟수가 없습니다. 예약을 승인할 수 없습니다.");
         }
 
         reservation.setStatus(Status.RESERVED);
