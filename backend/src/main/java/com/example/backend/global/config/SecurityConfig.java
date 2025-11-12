@@ -62,6 +62,8 @@ public class SecurityConfig {
                                         "/api/branches",
                                         "/api/products",
                                         "/error",
+                                        "/images/**",
+                                        "/images-init/**"
                                         "/ws/**"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
