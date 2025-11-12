@@ -23,7 +23,7 @@ function HamburgerButton({ onClick }) {
     </button>
   );
 }
-function Sidebar({ open }) {
+function Sidebar({ open, userRole }) {
   const Item = ({ to, icon, label }) => {
     const { pathname } = useLocation();
     const active = pathname === to;
@@ -38,7 +38,8 @@ function Sidebar({ open }) {
       </Link>
     );
   };
-
+  const isAdmin = userRole === 'ADMIN';
+  const chatPath = isAdmin ? '/admin/chat' : '/chat';
   return (
     <aside
       className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${
@@ -66,7 +67,7 @@ function Sidebar({ open }) {
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" /></svg>}
         />
         <Item
-          to="/chat"
+          to={chatPath}
           label="실시간 상담"
           icon={<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 3h20v14H6l-4 4V3z" /></svg>}
         />
@@ -100,7 +101,7 @@ export default function MainLayout() {
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user); 
-
+  const userRole = user?.role || '';
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -108,7 +109,7 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar open={open} />
+      <Sidebar open={open} userRole={userRole} />
 
       <header className={`sticky top-0 z-20 bg-white/70 backdrop-blur border-b ${open ? "ml-64" : "ml-0"} transition-all`}>
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
