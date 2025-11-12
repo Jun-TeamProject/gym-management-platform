@@ -152,7 +152,7 @@ const AdminChatPage = () => {
                         <>
                             <div className="p-4 border-b bg-white shadow-sm">
                                 <div className="text-xl font-semibold text-gray-800">
-                                    <Link to={`/admin/users/detail/${selectedRoom.userId}`}>{selectedRoom.username}님과의 대화</Link>
+                                    <Link to={`/admin/users/detail/${selectedRoom.userId}`} state={{ from: '/a' }}>{selectedRoom.username}님과의 대화</Link>
                                 </div>
                                 <p className="text-sm text-gray-500">회원 ID: {selectedRoom.userId}</p>
                             </div>
