@@ -33,6 +33,9 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType type;
 
+    @Column(name = "related_id", nullable = false)
+    private Long relatedId;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

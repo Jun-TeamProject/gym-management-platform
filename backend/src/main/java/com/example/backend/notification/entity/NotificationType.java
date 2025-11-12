@@ -4,5 +4,6 @@ public enum NotificationType {
     MEMBERSHIP_EXPIRY,
     NEW_MESSAGE,
     NOTICE,
-    PT_RESERVATION
+    RESERVATION_REQUEST,
+    RESERVATION_CONFIRMED
 }
