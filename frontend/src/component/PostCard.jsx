@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-export default function PostCard({ post, onEdit, onDelete, onToggleLike }) {
+export default function PostCard({ post, me, isAdmin, onEdit, onDelete, onToggleLike }) {
+  const meId = me?.id ?? me?.userId ?? null;
+  const ownerId = post?.user?.id ?? post?.user?.userId ?? null;
+  const isOwner = meId != null && ownerId != null && Number(meId) === Number(ownerId);
+
   const [optimistic, setOptimistic] = useState({
     isLiked: post.isLiked,
     likeCount: post.likeCount ?? 0,
@@ -14,7 +18,6 @@ export default function PostCard({ post, onEdit, onDelete, onToggleLike }) {
       }));
       await onToggleLike(post.id);
     } catch {
-      // 실패 시 롤백
       setOptimistic({ isLiked: post.isLiked, likeCount: post.likeCount ?? 0 });
     }
   };
@@ -38,6 +41,7 @@ export default function PostCard({ post, onEdit, onDelete, onToggleLike }) {
             {typeof post.commentCount === "number" && <> · 댓글 {post.commentCount}</>}
           </div>
         </div>
+
         <div className="flex gap-2 shrink-0">
           <button
             onClick={handleLike}
@@ -46,8 +50,13 @@ export default function PostCard({ post, onEdit, onDelete, onToggleLike }) {
           >
             ❤️ {optimistic.likeCount}
           </button>
-          <button onClick={() => onEdit(post)} className="px-3 py-1 rounded-lg border">수정</button>
-          <button onClick={() => onDelete(post.id)} className="px-3 py-1 rounded-lg border text-red-600">삭제</button>
+
+          {(isOwner || isAdmin) && (
+            <>
+              <button onClick={() => onEdit(post)} className="px-3 py-1 rounded-lg border">수정</button>
+              <button onClick={() => onDelete(post.id)} className="px-3 py-1 rounded-lg border text-red-600">삭제</button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -22,6 +22,8 @@ import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
 import UserDetailPage from "./pages/UserDetailPage";
 import BranchListPage from "./pages/BranchListPage";
 import BranchDetailPage from "./pages/BranchDetailPage";
+import UserChatPage from "./pages/UserChatPage";
+import AdminChatPage from "./pages/AdminChatPage";
 
 const App = () => {
   return (
@@ -46,6 +48,7 @@ const App = () => {
             <Route path="/products" element={<ProductPurchaseList />} />
             <Route path="/attendances" element={<Calendar />} />
             <Route path="/reservations" element={<ReservationPage />} />
+            <Route path="/chat" element={<UserChatPage />}/>
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}
@@ -63,6 +66,7 @@ const App = () => {
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
             <Route path="/admin/overview" element={<AdminOverview />} />
+            <Route path="/admin/chat" element={<AdminChatPage />}/>
             <Route
               path="/admin/payments"
               element={<PaymentHistoryAdminPage />}
