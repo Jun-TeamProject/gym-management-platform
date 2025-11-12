@@ -23,7 +23,7 @@ function HamburgerButton({ onClick }) {
     </button>
   );
 }
-function Sidebar({ open, userRole }) {
+function Sidebar({ open, userRole='' }) {
   const Item = ({ to, icon, label }) => {
     const { pathname } = useLocation();
     const active = pathname === to;
