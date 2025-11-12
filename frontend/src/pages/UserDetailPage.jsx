@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { AdminApi } from "../services/AdminApi";
 import MembershipInfo from "../components/profile/MembershipInfo";
 
@@ -76,7 +76,9 @@ function UserDetailPage() {
   const { userId } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previousPath = location.state?.from;//이전 url
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -91,19 +93,24 @@ function UserDetailPage() {
     };
     fetchUserProfile();
   }, [userId]);
-
+  const handleGoBack = () => {
+    navigate(-1);
+};
   return (
     <div className="bg-white w-full max-w-4xl mx-auto rounded-2xl shadow-md p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800">
           {profile ? `${profile.username} ` : " "}
         </h1>
-        <Link
+        {/* <Link
           to="/admin/users"
           className="px-5 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
         >
           ←
-        </Link>
+        </Link> */}
+        <button className="px-5 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition" onClick={handleGoBack}>
+        ←
+        </button>
       </div>
 
       {loading ? (
@@ -112,7 +119,9 @@ function UserDetailPage() {
         <div className="space-y-8">
           <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3"> </h3>
-
+            {previousPath === '/a' && (
+                <MembershipInfo memberships={profile.memberships} />
+            )}
             <h3 className="text-lg font-semibold text-gray-800 mb-3"> </h3>
             <ProfileDetailView user={profile} />
           </div>

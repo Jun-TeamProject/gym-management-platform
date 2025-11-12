@@ -24,9 +24,7 @@ function HamburgerButton({ onClick }) {
     </button>
   );
 }
-
-/* Sidebar (내장 버전) */
-function Sidebar({ open }) {
+function Sidebar({ open, userRole='' }) {
   const Item = ({ to, icon, label }) => {
     const { pathname } = useLocation();
     const active = pathname === to;
@@ -41,7 +39,8 @@ function Sidebar({ open }) {
       </Link>
     );
   };
-
+  const isAdmin = userRole === 'ADMIN';
+  const chatPath = isAdmin ? '/admin/chat' : '/chat';
   return (
     <aside
       className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${
@@ -77,7 +76,7 @@ function Sidebar({ open }) {
           }
         />
         <Item
-          to="/chat"
+          to={chatPath}
           label="실시간 상담"
           icon={
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -130,8 +129,8 @@ export default function MainLayout() {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
-  const user = useAuthStore((s) => s.user);
-
+  const user = useAuthStore((s) => s.user); 
+  const userRole = user?.role || '';
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -139,8 +138,7 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar open={open} />
+      <Sidebar open={open} userRole={userRole} />
 
       {/* Header */}
       <header

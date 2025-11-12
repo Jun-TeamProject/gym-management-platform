@@ -62,7 +62,6 @@ const AdminPage = () => {
     }
   };
   const handleRoleChange = async (userId, data) => {
-    console.log(userId, data);
     await userService.changeRole(userId, data);
     alert("role이 성공적으로 변경되었습니다.");
     fetchUsers();
