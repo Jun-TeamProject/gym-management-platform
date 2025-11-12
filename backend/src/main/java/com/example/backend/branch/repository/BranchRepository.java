@@ -2,6 +2,9 @@ package com.example.backend.branch.repository;
 
 import com.example.backend.branch.entity.Branch;
 import com.example.backend.branch.entity.BranchType;
+import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +17,9 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
     List<Branch> findAllByType(BranchType type);
 
     Optional<Branch> findByBranchName(String branchName);
+
+    @Override
+    @EntityGraph(attributePaths =  {"facilityImageUrls"})
+    @NonNull
+    Optional<Branch> findById(@NonNull Long id);
 }

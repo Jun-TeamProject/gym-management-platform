@@ -103,9 +103,10 @@ export default function HomePage() {
             },
 
             {
-              title: "지점 관리",
+              title: "지점 소개",
               desc: "지점별 트레이너/시설.",
               emoji: "📈",
+              link: "/branches",
             },
 
             { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
@@ -196,7 +197,7 @@ export default function HomePage() {
                 </Link>
               );
             }
-            if (f.title === "지점 관리") {
+            if (f.title === "지점 소개") {
               return (
                 <Link
                   key={f.title}

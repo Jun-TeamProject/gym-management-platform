@@ -20,6 +20,8 @@ import PostsPage from "./pages/PostsPage";
 import ReservationPage from "./pages/ReservationPage";
 import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
 import UserDetailPage from "./pages/UserDetailPage";
+import BranchListPage from "./pages/BranchListPage";
+import BranchDetailPage from "./pages/BranchDetailPage";
 
 const App = () => {
   return (
@@ -31,6 +33,8 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
 
+          <Route path="/branches" element={<BranchListPage />} />
+          <Route path="/branches/:id" element={<BranchDetailPage />} />
           <Route path="/community" element={<PostsPage />} />
 
           <Route

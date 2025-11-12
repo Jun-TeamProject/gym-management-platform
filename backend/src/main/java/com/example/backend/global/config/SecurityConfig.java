@@ -61,7 +61,9 @@ public class SecurityConfig {
                                         "/h2-console/**",
                                         "/api/branches",
                                         "/api/products",
-                                        "/error"
+                                        "/error",
+                                        "/images/**",
+                                        "/images-init/**"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
