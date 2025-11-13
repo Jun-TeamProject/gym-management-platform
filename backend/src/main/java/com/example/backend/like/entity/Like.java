@@ -12,12 +12,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "likes",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}),
+@Table(
+        name = "likes",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_like_user_post",
+                columnNames = {"user_id", "post_id"}
+        ),
         indexes = {
                 @Index(name = "idx_like_post_id", columnList = "post_id"),
                 @Index(name = "idx_like_user_id", columnList = "user_id"),
-                @Index(name = "idx_like_post_created", columnList = "post_id, created_at"),
+                @Index(name = "idx_like_post_created", columnList = "post_id, created_at")
         }
 )
 @Data
@@ -25,15 +29,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Like {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 

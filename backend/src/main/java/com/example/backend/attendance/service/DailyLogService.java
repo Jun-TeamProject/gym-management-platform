@@ -84,17 +84,6 @@ public class DailyLogService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
-        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
-                user.getId(),
-                Product.ProductType.PT
-        ).orElseThrow(() -> new EntityNotFoundException("Membership not found"));
-
-        boolean usePtSuccess = ptMembership.usePtSession();
-
-        if (!usePtSuccess) {
-            throw new IllegalArgumentException("남은 PT 횟수가 없습니다.");
-        }
-
         DailyLog dailyLog = dailyLogRepository.findByUserAndLogDate(user, date)
                 .orElseGet(() -> createNewDailyLog(user, date));
 

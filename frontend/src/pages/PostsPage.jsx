@@ -3,6 +3,24 @@ import { createPost, deletePost, getPosts, toggleLike, updatePost } from "../ser
 import PostCard from "../component/PostCard";
 import PostForm from "../component/PostForm";
 
+/** JWT에서 me(id, role 등) 꺼내는 간단 헬퍼 */
+function getMeFromToken() {
+  const token = localStorage.getItem("accessToken");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    // 백엔드 토큰 페이로드 키에 맞춰서 골라주세요 (id/role/email 등)
+    return {
+      id: payload.id ?? payload.userId ?? null,
+      role: payload.role ?? null,
+      email: payload.email ?? null,
+      username: payload.username ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default function PostsPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
@@ -11,11 +29,14 @@ export default function PostsPage() {
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // ✅ 현재 사용자/권한 계산
+  const me = getMeFromToken();                 // { id, role, ... } 또는 null
+  const isAdmin = me?.role === "ADMIN";        // 대문자 기준
+
   const load = async (p = page) => {
     setLoading(true);
     try {
       const res = await getPosts(p, size);
-      // Spring Data Page 그대로 사용
       setData(res.data);
     } catch (e) {
       console.error(e);
@@ -25,8 +46,8 @@ export default function PostsPage() {
     }
   };
 
-  useEffect(() => { load(0); }, []); // 첫 로드
-  useEffect(() => { load(page); }, [page]); // 페이지 변경 시
+  useEffect(() => { load(0); }, []);
+  useEffect(() => { load(page); }, [page]);
 
   const pages = useMemo(() => {
     const arr = [];
@@ -39,7 +60,7 @@ export default function PostsPage() {
     try {
       await createPost(payload);
       setEditing(null);
-      setPage(0); 
+      setPage(0);
       await load(0);
     } catch (e) {
       console.error(e);
@@ -71,7 +92,11 @@ export default function PostsPage() {
       await load(page);
     } catch (e) {
       console.error(e);
-      alert("삭제에 실패했습니다.");
+      alert(
+        e.response?.data?.message
+          ? `삭제 실패: ${e.response.data.message}`
+          : "삭제에 실패했습니다."
+      );
     }
   };
 
@@ -113,6 +138,8 @@ export default function PostsPage() {
               <PostCard
                 key={p.id}
                 post={p}
+                me={me}              
+                isAdmin={isAdmin}    
                 onEdit={() => setEditing(p)}
                 onDelete={handleDelete}
                 onToggleLike={handleToggleLike}
