@@ -77,7 +77,7 @@ public class Payment {
     }
 
     public void cancel(String reason) {
-        this.status = PaymentStatus.CANCELED;
+        this.status = PaymentStatus.CANCELLED;
         // (추가) reason 필드나 로그 필요
     }
 }

@@ -257,7 +257,43 @@ public class ReservationService {
             throw new UnauthorizedException("You are not authorized to delete this reservation");
         }
 
+        if (reservation.getStatus() != Status.CANCELLED){
+            throw new IllegalStateException(" CANCELLED ");
+        }
         reservationRepository.deleteById(reservationId);
+    }
+
+    //예약 취소
+    public ReservationResponse cancelReservation(Long reservationId) {
+        User currentUser = authenticationService.getCurrentUser();
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        if (!isAdminOrRelatedUser(currentUser, reservation)) {
+            throw new UnauthorizedException("You are not authorized to cancel this reservation");
+        }
+
+        if (reservation.getStatus() == Status.COMPLETED || reservation.getStatus() == Status.CANCELLED){
+            throw new IllegalStateException("Already cancelled or done");
+        }
+
+        if (reservation.getStatus() == Status.RESERVED) {
+            User member = reservation.getMember();
+
+            Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                    member.getId(),
+                    Product.ProductType.PT
+            ).orElseThrow(() -> new IllegalStateException("Cannot find PT membership"));
+
+            ptMembership.restorePtSession();
+            membershipRepository.save(ptMembership);
+        }
+
+        reservation.setStatus(Status.CANCELLED);
+        reservation = reservationRepository.save(reservation);
+
+        return ReservationResponse.fromEntity(reservation);
     }
 
     private boolean isAdminOrRelatedUser(User currentUser, Reservation reservation) {

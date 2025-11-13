@@ -240,20 +240,22 @@ export default function HomePage() {
               지점별 관리와 데이터 기반 운영.
             </p>
           </div>
-          <div className="flex gap-3">
-            <Link
-              to="/register"
-              className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
-            >
-              회원가입
-            </Link>
-            <Link
-              to="/login"
-              className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
-            >
-              로그인
-            </Link>
-          </div>
+          {!isAuthenticated && (
+            <div className="flex gap-3">
+              <Link
+                to="/register"
+                className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
+              >
+                회원가입
+              </Link>
+              <Link
+                to="/login"
+                className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
+              >
+                로그인
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

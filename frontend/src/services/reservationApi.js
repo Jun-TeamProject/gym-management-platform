@@ -17,7 +17,11 @@ export const ReservationApi = {
     return api.put(`/api/reservations/${reservationId}/confirm`);
   },
 
+  cancelReservation: (reservationId) => {
+    return api.put(`/api/reservations/${reservationId}/cancel`);
+  },
+
   deleteReservation: (reservationId) => {
-    return api.delete(`/api/reservations/${reservationId}`);
+    return api.delete(`/api/reservations/${reservationId}/delete`);
   },
 };
