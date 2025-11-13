@@ -27,6 +27,6 @@ public class ChatRoom {
     @Column(columnDefinition = "TEXT") 
     private String lastMessage;
 
-    @Column(name = "last_message_at", updatable = false, nullable = false)
+    @Column(name = "last_message_at", nullable = false)
     private Instant lastMessageAt = Instant.now();
 }
