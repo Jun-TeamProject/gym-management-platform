@@ -115,6 +115,14 @@ public class Membership {
         return true;
     }
 
+    // PT 취소 시 1회 복구
+    public void restorePtSession() {
+        if (this.product.getType() != Product.ProductType.PT) {
+
+        }
+        this.ptCountRemaining += 1;
+    }
+
     // (추가) 이용권 연장 등의 비즈니스 메서드
 }
 

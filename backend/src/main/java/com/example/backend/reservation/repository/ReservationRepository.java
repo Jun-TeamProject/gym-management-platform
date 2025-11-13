@@ -23,7 +23,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT COUNT(r) > 0 FROM Reservation r " +
     "WHERE r.trainer.id = :trainerId " +
-    "AND r.status != 'CANCELED' " +
+    "AND r.status != 'CANCELLED' " +
     "AND r.startTime < :endTime " +
     "AND r.endTime > :startTime ")
     boolean existsOverlappingReservation (

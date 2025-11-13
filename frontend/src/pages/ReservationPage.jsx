@@ -63,7 +63,7 @@ const ReservationPage = () => {
         return "#10b981";
       case "COMPLETED":
         return "#6b7280";
-      case "CANCELED":
+      case "CANCELLED":
         return "#ef4444";
       default:
         return "#3b82f6";
@@ -85,17 +85,18 @@ const ReservationPage = () => {
   const handleEventClick = (clickInfo) => {
     const { id, title, extendedProps } = clickInfo.event;
     const status = extendedProps.status;
-    // const memberId = extendedProps.memberId;
+    const memberId = extendedProps.memberId;
 
     let message = `[${title}]\n시간: ${clickInfo.event.start.toLocaleString()}\n상태: ${status}\n메모: ${
       extendedProps.memo || "없음"
     }`;
 
+    // 트레이너가 PENDING 상태의 예약을 확정하는 경우
     if (user.role === "TRAINER" && status === "PENDING") {
       if (window.confirm(message + "\n\n 예약을 확정하시겠습니까?")) {
         ReservationApi.confirmReservation(id)
           .then(() => {
-            alert("예약이 확정되었습니다. ");
+            alert("예약이 확정되었습니다. (회원 PT 차감)");
             fetchReservations();
           })
           .catch((err) => {
@@ -103,12 +104,26 @@ const ReservationPage = () => {
             alert("예약 확정에 실패했습니다.");
           });
       }
+      // CANCELLED 상태의 예약을 삭제하는 경우
+    }else if (user.id === memberId && status === "CANCELLED") {
+        if (window.confirm(message + "\n\n 예약을 삭제 하시겠습니까?")) {
+          ReservationApi.deleteReservation(id)
+            .then(() => {
+                alert("예약이 삭제되었습니다.");
+                fetchReservations();
+            })
+            .catch((err) => {
+              console.error("삭제 실패: ", err);
+              alert("예약 삭제에 실패 했습니다.");
+            });
+        }
+      // 트레이너나 회원이 자신의 예약을 취소하는 경우
     } else if (
-      status !== "COMPLETED" &&
-      (user.role === "ADMIN" || user.id === clickInfo.event.member?.id)
+      (status === "PENDING" || status === "RESERVED") &&
+      (user.role === "TRAINER" || user.id === memberId)
     ) {
-      if (window.confirm(message + "\n\n 예약을 취소 하시겠습니까?")) {
-        ReservationApi.deleteReservation(id)
+      if (window.confirm(message + "\n\n 예약을 취소 하시겠습니까? (횟수가 복구됩니다)")) {
+        ReservationApi.cancelReservation(id)
           .then(() => {
             alert("예약이 취소되었습니다. ");
             fetchReservations();
