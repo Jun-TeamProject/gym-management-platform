@@ -54,7 +54,6 @@ const AdminChatPage = () => {
         
         setChatRooms(await chatService.getAllChatRoom());
         setLoading(false);
-        
         // if (chatRooms.length > 0) {
         //     handleRoomSelect(chatRooms[0]);
         // }
@@ -93,6 +92,7 @@ const AdminChatPage = () => {
             });
             subscriptions.current[newroom.id] = subscription;
         }
+        fetchRooms();
     };
     
     const handleSendMessage = () => {
@@ -109,6 +109,7 @@ const AdminChatPage = () => {
 
         stompClient.current.send("/app/chat.sendMessage", {}, JSON.stringify(messageToSend)); 
         setInputMessage('');
+        fetchRooms();
     };
 
 
@@ -142,6 +143,9 @@ const AdminChatPage = () => {
                                 <p className="text-sm text-gray-500 truncate mt-1">
                                     {room.lastMessage}
                                 </p>
+                                <p>
+                                    {new Date(room.lastMessageAt).toLocaleTimeString()}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -164,6 +168,7 @@ const AdminChatPage = () => {
                                             <div className="flex justify-end">
                                                 <div className="bg-indigo-500 text-white rounded-xl p-3 max-w-xs break-words shadow-md">
                                                     {msg.content}
+                                                    <div className="text-xs mt-1 opacity-70 text-right">{new Date(msg.sentAt).toLocaleTimeString()}</div>
                                                 </div>
                                             </div>
                                         ) : (
@@ -172,6 +177,7 @@ const AdminChatPage = () => {
                                                     <div className="font-semibold text-sm mb-1 text-indigo-600">회원 
                                                         <Link to={`/admin/users/detail/${selectedRoom.userId}`} state={{ from: '/a' }}>({selectedRoom.username})</Link></div>
                                                     {msg.content}
+                                                    <div className="text-xs mt-1 opacity-70 text-right">{new Date(msg.sentAt).toLocaleTimeString()}</div>
                                                 </div>
                                             </div>
                                         )}

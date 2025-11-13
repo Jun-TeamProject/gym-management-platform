@@ -99,16 +99,16 @@ const UserChatPage = () => {
     return (
         <div className="flex h-[80vh] antialiased bg-gray-100 p-6"> 
             <div className="flex flex-row h-full w-full overflow-x-hidden">
-                <div className="flex flex-col flex-auto flex-shrink-0 rounded-xl bg-white h-full p-4 shadow-2xl"> 
+                <div className="flex flex-col flex-auto flex-shrink-0 rounded-xl bg-white h-full shadow-2xl"> 
                     
-                    <div className="flex items-center justify-between p-3 border-b border-gray-200">
+                    <div className="flex items-center justify-between p-3 border-b border-black-200">
                         <div className="text-xl font-semibold text-gray-700">관리자 1:1 채팅 문의</div>
                         <div className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
                             상태: {isConnected ? '연결됨' : '연결 끊김'}
                         </div>
                     </div>
 
-                    <div className="flex flex-col h-full overflow-y-auto mt-4 space-y-4 bg-gray-50 p-3 rounded-lg"> 
+                    <div className="flex flex-col h-full overflow-y-auto mt-4 space-y-4 bg-gray-50 p-3  border-b"> 
                         {messages.map((message, index) => (
                             <div key={index} className="chat-message"> 
                                 {message.senderId === currentUserId ? (
@@ -132,9 +132,9 @@ const UserChatPage = () => {
                         <div ref={messagesEndRef} /> 
                     </div>
 
-                    <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 mt-4 shadow-md border border-gray-300">
-                        <div className="flex-grow ml-4">
-                            <div className="relative w-full">
+                    <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full p-4  shadow-md ">
+                        <div className="flex-grow ml-4 ">
+                            {/* <div className="relative w-full"> */}
                                 <input
                                     type="text"
                                     value={inputMessage}
@@ -143,13 +143,13 @@ const UserChatPage = () => {
                                     placeholder="메시지를 입력하세요..."
                                     className="flex w-full border rounded-xl focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 pl-4 h-10"
                                 />
-                            </div>
+                            {/* </div> */}
                         </div>
                         <div className="ml-4">
                             <button
                                 onClick={handleSendMessage}
                                 disabled={!isConnected}
-                                className={`flex items-center justify-center rounded-xl text-white px-4 py-1 flex-shrink-0 transition duration-300 ${isConnected ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                                className={`flex items-center justify-center rounded-xl text-white p-2 flex-shrink-0 transition duration-300 ${isConnected ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-gray-400 cursor-not-allowed'}`}
                             >
                                 <span>전송</span>
                             </button>
