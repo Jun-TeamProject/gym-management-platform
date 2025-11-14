@@ -200,6 +200,28 @@ public class ReservationService {
             throw new IllegalStateException("남은 PT 횟수가 없습니다. 예약을 승인할 수 없습니다.");
         }
 
+        int countLeft = ptMembership.getPtCountRemaining();
+
+        if (countLeft == 5 || countLeft == 1) {
+            String message = String.format(
+                    "회원님의 '%s'이 %d회 남았습니다.",
+                    ptMembership.getProduct().getName(),
+                    countLeft
+            );
+
+            Notification notification = Notification.builder()
+                    .user(member)
+                    .message(message)
+                    .isRead(false)
+                    .type(NotificationType.MEMBERSHIP_EXPIRY)
+                    .build();
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
+            sseEmitterService.sendToUser(member.getId(), response);
+        }
+
         reservation.setStatus(Status.RESERVED);
 
         String message = String.format("%s 트레이너가 %s PT 예약을 승인했습니다.",

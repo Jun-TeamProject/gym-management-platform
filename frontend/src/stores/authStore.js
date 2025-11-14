@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import  authService  from "../services/auth";
+import authService from "../services/auth";
+import useNotificationStore from "./notificationStore";
 
 const useAuthStore = create((set) => ({
     user: authService.getCurrentUser(),
@@ -8,7 +9,7 @@ const useAuthStore = create((set) => ({
     error: null,
 
     register: async (userData) => {
-        set({ loading: true, error: null});
+        set({ loading: true, error: null });
         try {
             const data = await authService.register(userData);
             // set({
@@ -16,51 +17,52 @@ const useAuthStore = create((set) => ({
             //     isAuthenticated: true,
             //     loading: false,
             // });
-            
+
             //회원가입후 자동로그인으로 뜨는 상태 변경
             set({ loading: false });
             return data;
-        }catch (err){
+        } catch (err) {
             set({
                 loading: false,
                 error: err.response?.data?.message || "Registration failed",
             });
-        throw err;
+            throw err;
         }
     },
     login: async (userData) => {
         set({ loading: true, error: null });
         try {
-        const data = await authService.login(userData);
-        set({
-            user: data?.user || null,
-            isAuthenticated: !!data?.access_token,
-            loading: false,
-        });
-        return data;
+            const data = await authService.login(userData);
+            set({
+                user: data?.user || null,
+                isAuthenticated: !!data?.access_token,
+                loading: false,
+            });
+            return data;
         } catch (err) {
-        console.error("authStore.login error:", err);
-        set({
-            loading: false,
-            error: err.response?.data?.message || "Login failed",
-        });
-        throw err;
+            console.error("authStore.login error:", err);
+            set({
+                loading: false,
+                error: err.response?.data?.message || "Login failed",
+            });
+            throw err;
         }
     },
     logout: () => {
-    authService.logout();
-    set({
-      user: null,
-      isAuthenticated: false,
-      error: null,
-    });
+        authService.logout();
+        set({
+            user: null,
+            isAuthenticated: false,
+            error: null,
+        });
+        useNotificationStore.getState().disconnectSse();
     },
     socialLoginSuccess: () => {
         const accessToken = localStorage.getItem("accessToken");
         const userStr = localStorage.getItem("user");
         const user = userStr ? JSON.parse(userStr) : null;
 
-        if(accessToken && user){
+        if (accessToken && user) {
             set({
                 user: user,
                 isAuthenticated: !!accessToken,
@@ -68,7 +70,7 @@ const useAuthStore = create((set) => ({
                 error: null,
             });
             return true;
-        }else{
+        } else {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("user");

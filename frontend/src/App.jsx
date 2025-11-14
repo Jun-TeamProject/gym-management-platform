@@ -24,6 +24,7 @@ import BranchListPage from "./pages/BranchListPage";
 import BranchDetailPage from "./pages/BranchDetailPage";
 import UserChatPage from "./pages/UserChatPage";
 import AdminChatPage from "./pages/AdminChatPage";
+import NotificationPage from "./pages/NotificationPage";
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
             <Route path="/products" element={<ProductPurchaseList />} />
             <Route path="/attendances" element={<Calendar />} />
             <Route path="/reservations" element={<ReservationPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}
