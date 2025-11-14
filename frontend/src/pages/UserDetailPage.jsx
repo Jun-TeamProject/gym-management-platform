@@ -7,6 +7,13 @@ const ProfileDetailView = ({ user }) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border">
+          <img
+            src={`http://localhost:8080${user.profileImageUrl}`}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-500">
             이름
@@ -78,7 +85,7 @@ function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const previousPath = location.state?.from;//이전 url
+  const previousPath = location.state?.from; //이전 url
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -95,7 +102,7 @@ function UserDetailPage() {
   }, [userId]);
   const handleGoBack = () => {
     navigate(-1);
-};
+  };
   return (
     <div className="bg-white w-full max-w-4xl mx-auto rounded-2xl shadow-md p-8">
       <div className="flex justify-between items-center mb-8">
@@ -108,8 +115,11 @@ function UserDetailPage() {
         >
           ←
         </Link> */}
-        <button className="px-5 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition" onClick={handleGoBack}>
-        ←
+        <button
+          className="px-5 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+          onClick={handleGoBack}
+        >
+          ←
         </button>
       </div>
 
@@ -119,8 +129,8 @@ function UserDetailPage() {
         <div className="space-y-8">
           <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3"> </h3>
-            {previousPath === '/a' && (
-                <MembershipInfo memberships={profile.memberships} />
+            {previousPath === "/a" && (
+              <MembershipInfo memberships={profile.memberships} />
             )}
             <h3 className="text-lg font-semibold text-gray-800 mb-3"> </h3>
             <ProfileDetailView user={profile} />

@@ -16,12 +16,12 @@ public class FileUploadService {
 
     private final String uploadRoot = System.getProperty("user.home") + File.separator + "gym_uploads";
 
-    public String storeFile(MultipartFile file) throws IOException {
+    public String storeFile(MultipartFile file, String subCategory) throws IOException {
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
         String extension = StringUtils.getFilenameExtension(originalFileName);
         String storedFileName = UUID.randomUUID().toString() + "." + extension;
 
-        File directory = new File(uploadRoot + File.separator );
+        File directory = new File(uploadRoot + File.separator +subCategory);
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -29,6 +29,6 @@ public class FileUploadService {
         Path targetLocation = Paths.get(directory.getAbsolutePath() + File.separator + storedFileName);
         file.transferTo(targetLocation);
 
-        return "/images/" + storedFileName;
+        return "/images/" + subCategory + "/" + storedFileName;
     }
 }
