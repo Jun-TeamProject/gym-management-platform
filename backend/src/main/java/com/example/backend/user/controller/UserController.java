@@ -5,11 +5,14 @@ import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -30,6 +33,15 @@ public class UserController {
             @Valid @RequestBody ProfileUpdateRequest request
     ) {
         UserDto updatedUser = userService.updateMyProfile(userDetails, request);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserDto> updateMyProfileImage(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("image")MultipartFile file
+            ) throws IOException {
+        UserDto updatedUser = userService.updateMyProfileImage(userDetails, file);
         return ResponseEntity.ok(updatedUser);
     }
 

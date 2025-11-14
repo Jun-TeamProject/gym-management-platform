@@ -91,7 +91,7 @@ public class BranchService {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("지점 정보를 찾을 수 없습니다."));
 
-        String imageUrl = fileUploadService.storeFile(file);
+        String imageUrl = fileUploadService.storeFile(file, "gym");
 
         branch.getFacilityImageUrls().add(imageUrl);
         branchRepository.save(branch);

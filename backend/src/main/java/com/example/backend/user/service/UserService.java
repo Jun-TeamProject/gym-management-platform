@@ -2,6 +2,7 @@ package com.example.backend.user.service;
 
 import com.example.backend.branch.entity.Branch;
 import com.example.backend.branch.repository.BranchRepository;
+import com.example.backend.global.service.FileUploadService;
 import com.example.backend.user.dto.ProfileUpdateRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.entity.Gender;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final BranchRepository branchRepository;
+    private final FileUploadService fileUploadService;
 
     @Transactional(readOnly = true)
     public UserDto getMyProfile(UserDetails userDetails) {
@@ -79,6 +83,19 @@ public class UserService {
 
         User updatedUser = userRepository.save(user);
         return UserDto.fromEntity(updatedUser);
+    }
+
+    public UserDto updateMyProfileImage(UserDetails userDetails, MultipartFile file) throws IOException {
+        String email = userDetails.getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        String imageUrl = fileUploadService.storeFile(file, "avatars");
+
+        user.setProfileImageUrl(imageUrl);
+        User updateUser = userRepository.save(user);
+
+        return UserDto.fromEntity(updateUser);
     }
 
     @Transactional(readOnly = true)
