@@ -33,7 +33,7 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType type;
 
-    @Column(name = "related_id", nullable = false)
+    @Column(name = "related_id", nullable = true)
     private Long relatedId;
 
     @CreationTimestamp

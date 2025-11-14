@@ -22,14 +22,4 @@ public class TestSchedulerController {
             return ResponseEntity.status(500).body("이용권 만료 스케줄러 수동 실행 실패: " + e.getMessage());
         }
     }
-
-    @GetMapping("/run-pt-scheduler")
-    public ResponseEntity<String> runPtScheduler() {
-        try {
-            membershipExpiryScheduler.checkAndSendPtCountNotification();
-            return ResponseEntity.ok("PT 횟수 스케줄러 수동 실행 성공");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("PT 횟수 스케줄러 수동 실행 실패: " + e.getMessage());
-        }
-    }
 }

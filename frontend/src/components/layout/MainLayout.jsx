@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
+import useNotificationStore from "../../stores/notificationStore";
 
 /* icons */
 function DumbbellIcon(props) {
@@ -24,8 +25,8 @@ function HamburgerButton({ onClick }) {
     </button>
   );
 }
-function Sidebar({ open, userRole='' }) {
-  const Item = ({ to, icon, label }) => {
+function Sidebar({ open, userRole = '' }) {
+  const Item = ({ to, icon, label, badgeCount }) => {
     const { pathname } = useLocation();
     const active = pathname === to;
     return (
@@ -36,16 +37,22 @@ function Sidebar({ open, userRole='' }) {
       >
         {icon}
         <span>{label}</span>
+
+        {badgeCount > 0 && (
+          <span className="w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full grid place-items-center">
+            {badgeCount > 9 ? "9+" : badgeCount}
+          </span>
+        )}
       </Link>
     );
   };
   const isAdmin = userRole === 'ADMIN';
   const chatPath = isAdmin ? '/admin/chat' : '/chat';
+  const unreadCount = useNotificationStore((s) => s.unreadCount);
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${
-        open ? "translate-x-0" : "-translate-x-64"
-      }`}
+      className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${open ? "translate-x-0" : "-translate-x-64"
+        }`}
     >
       <div className="px-5 py-4 border-b">
         <Link to="/" className="flex items-center gap-2">
@@ -74,6 +81,16 @@ function Sidebar({ open, userRole='' }) {
               <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" />
             </svg>
           }
+        />
+        <Item
+          to="/notifications"
+          label="알림"
+          icon={
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2m6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5z" />
+            </svg>
+          }
+          badgeCount={unreadCount}
         />
         <Item
           to={chatPath}
@@ -129,12 +146,27 @@ export default function MainLayout() {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
-  const user = useAuthStore((s) => s.user); 
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const userRole = user?.role || '';
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const { connectSse, disconnectSse, fetchNotifications, } = useNotificationStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
+      connectSse();
+    } else {
+      disconnectSse();
+    }
+    return () => {
+      disconnectSse();
+    };
+  }, [isAuthenticated, connectSse, disconnectSse, fetchNotifications]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -142,9 +174,8 @@ export default function MainLayout() {
 
       {/* Header */}
       <header
-        className={`sticky top-0 z-20 bg-white/70 backdrop-blur border-b ${
-          open ? "ml-64" : "ml-0"
-        } transition-all`}
+        className={`sticky top-0 z-20 bg-white/70 backdrop-blur border-b ${open ? "ml-64" : "ml-0"
+          } transition-all`}
       >
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
