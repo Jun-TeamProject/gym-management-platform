@@ -86,11 +86,21 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{reservationId}")
+    @DeleteMapping("/{reservationId}/delete")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable Long reservationId
     ) {
         reservationService.deleteReservation(reservationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{reservationId}/cancel")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ReservationResponse> cancelReservation(
+            @PathVariable Long reservationId
+    ){
+        ReservationResponse response = reservationService.cancelReservation(reservationId);
+        return ResponseEntity.ok(response);
     }
 }

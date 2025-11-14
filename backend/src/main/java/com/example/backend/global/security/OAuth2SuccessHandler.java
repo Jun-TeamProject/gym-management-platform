@@ -73,8 +73,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     newUser.setUpdatedAt(LocalDateTime.now());
                     return userRepository.save(newUser);
                 });
+        boolean hasLocalAvatar = user.getProfileImageUrl() != null &&
+                !user.getProfileImageUrl().startsWith("http");
 
-        if (finalAvatarUrl != null && !finalAvatarUrl.equals(user.getProfileImageUrl())) {
+        if (!hasLocalAvatar && finalAvatarUrl != null && !finalAvatarUrl.equals(user.getProfileImageUrl())) {
             user.setProfileImageUrl(finalAvatarUrl);
         }
 

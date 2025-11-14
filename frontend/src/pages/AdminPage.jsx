@@ -113,7 +113,7 @@ const AdminPage = () => {
                   이메일
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  멤버십 종료일
+                  회원권 종료일
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   남은 pt횟수
@@ -138,7 +138,7 @@ const AdminPage = () => {
                     {user.email}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {user.membership?.endDate || "멤버십 등록 x"}
+                    {user.membership?.endDate || "회원권 등록 x"}
                     {user.membership && (
                       <button
                         className="ml-2 text-blue-600"

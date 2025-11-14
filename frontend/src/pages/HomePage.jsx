@@ -103,9 +103,10 @@ export default function HomePage() {
             },
 
             {
-              title: "지점 관리",
+              title: "지점 소개",
               desc: "지점별 트레이너/시설.",
               emoji: "📈",
+              link: "/branches",
             },
 
             { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
@@ -196,7 +197,7 @@ export default function HomePage() {
                 </Link>
               );
             }
-            if (f.title === "지점 관리") {
+            if (f.title === "지점 소개") {
               return (
                 <Link
                   key={f.title}
@@ -239,20 +240,22 @@ export default function HomePage() {
               지점별 관리와 데이터 기반 운영.
             </p>
           </div>
-          <div className="flex gap-3">
-            <Link
-              to="/register"
-              className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
-            >
-              회원가입
-            </Link>
-            <Link
-              to="/login"
-              className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
-            >
-              로그인
-            </Link>
-          </div>
+          {!isAuthenticated && (
+            <div className="flex gap-3">
+              <Link
+                to="/register"
+                className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
+              >
+                회원가입
+              </Link>
+              <Link
+                to="/login"
+                className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
+              >
+                로그인
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

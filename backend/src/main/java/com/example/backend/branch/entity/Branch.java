@@ -34,4 +34,9 @@ public class Branch {
     @Builder.Default
     @JsonIgnore
     private List<User> users = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "T_FACILITY_IMAGES", joinColumns = @JoinColumn(name = "branch_id"))
+    @Column(name = "image_url")
+    private List<String> facilityImageUrls;
 }

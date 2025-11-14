@@ -20,6 +20,8 @@ import PostsPage from "./pages/PostsPage";
 import ReservationPage from "./pages/ReservationPage";
 import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
 import UserDetailPage from "./pages/UserDetailPage";
+import BranchListPage from "./pages/BranchListPage";
+import BranchDetailPage from "./pages/BranchDetailPage";
 import UserChatPage from "./pages/UserChatPage";
 import AdminChatPage from "./pages/AdminChatPage";
 import NotificationPage from "./pages/NotificationPage";
@@ -34,6 +36,8 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
 
+          <Route path="/branches" element={<BranchListPage />} />
+          <Route path="/branches/:id" element={<BranchDetailPage />} />
           <Route path="/community" element={<PostsPage />} />
 
           <Route
@@ -45,7 +49,6 @@ const App = () => {
             <Route path="/products" element={<ProductPurchaseList />} />
             <Route path="/attendances" element={<Calendar />} />
             <Route path="/reservations" element={<ReservationPage />} />
-            <Route path="/chat" element={<UserChatPage />}/>
             <Route path="/notifications" element={<NotificationPage />} />
           </Route>
 
@@ -54,6 +57,7 @@ const App = () => {
             <Route path="/checkout/:productId" element={<CheckoutPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/purchases" element={<PaymentHistoryPage />} />
+            <Route path="/chat" element={<UserChatPage />}/>
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>
 
