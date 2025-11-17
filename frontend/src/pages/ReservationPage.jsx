@@ -101,7 +101,7 @@ const ReservationPage = () => {
           })
           .catch((err) => {
             console.error("실패: ", err);
-            alert("예약 확정에 실패했습니다.");
+            alert("예약 확정에 실패했습니다.(회원 PT 횟수가 부족합니다)");
           });
       }
       // CANCELLED 상태의 예약을 삭제하는 경우
