@@ -41,6 +41,12 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long postId) {
+        PostResponse response = postService.getPost(postId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<Page<PostResponse>> getUserPosts(
             @PathVariable Long userId,
@@ -80,11 +86,11 @@ public class PostController {
 //    }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<?> toggleLike(@PathVariable Long postId) {
+    public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable Long postId) {
         boolean isLiked = likeService.toggleLike(postId);
         Long likeCount = likeService.getLikeCount(postId);
 
-        return ResponseEntity.ok().body(Map.of(
+        return ResponseEntity.ok(Map.of(
                 "isLiked", isLiked,
                 "likeCount", likeCount
         ));
