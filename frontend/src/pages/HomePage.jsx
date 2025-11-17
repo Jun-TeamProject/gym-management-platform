@@ -109,7 +109,10 @@ export default function HomePage() {
               link: "/branches",
             },
 
-            { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
+            { title: "알림",
+              desc: "만료/예약/상담 실시간 알림.", 
+              emoji: "🔔",
+              link: "/notifications" },
 
             {
               title: "커뮤니티",
