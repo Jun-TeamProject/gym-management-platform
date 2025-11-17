@@ -17,6 +17,7 @@ import AdminOverview from "./pages/AdminOverview";
 import Calendar from "./component/Calender";
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 import PostsPage from "./pages/PostsPage";
+import PostDetailPage from "./pages/PostDetailPage";
 import ReservationPage from "./pages/ReservationPage";
 import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
 import UserDetailPage from "./pages/UserDetailPage";
@@ -39,6 +40,8 @@ const App = () => {
           <Route path="/branches" element={<BranchListPage />} />
           <Route path="/branches/:id" element={<BranchDetailPage />} />
           <Route path="/community" element={<PostsPage />} />
+          <Route path="/posts" element={<PostsPage />} />
+          <Route path="/posts/:id" element={<PostDetailPage />} />
 
           <Route
             element={
@@ -57,7 +60,7 @@ const App = () => {
             <Route path="/checkout/:productId" element={<CheckoutPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/purchases" element={<PaymentHistoryPage />} />
-            <Route path="/chat" element={<UserChatPage />}/>
+            <Route path="/chat" element={<UserChatPage />} />
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>
 
@@ -68,7 +71,7 @@ const App = () => {
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
             <Route path="/admin/overview" element={<AdminOverview />} />
-            <Route path="/admin/chat" element={<AdminChatPage />}/>
+            <Route path="/admin/chat" element={<AdminChatPage />} />
             <Route
               path="/admin/payments"
               element={<PaymentHistoryAdminPage />}

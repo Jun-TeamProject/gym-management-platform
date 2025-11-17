@@ -4,9 +4,11 @@ import com.example.backend.like.entity.Like;
 import com.example.backend.post.entity.Post;
 import com.example.backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
@@ -16,4 +18,9 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     boolean existsByUserAndPost(User user, Post post);
 
     void deleteByUserAndPost(User user, Post post);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Like l where l.post.id = :postId")
+    void deleteByPostId(Long postId);
 }

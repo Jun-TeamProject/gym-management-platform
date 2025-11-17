@@ -119,25 +119,28 @@ export default function CommentList({ postId, me, isAdmin }) {
                         {c.content}
                       </div>
                       <div className="text-xs text-gray-500 flex items-center gap-2">
-                        <span>{c.user?.name ?? c.user?.email ?? "익명"}</span>
+                        <span>
+                          {c.user?.username ?? c.user?.email ?? "익명"}
+                        </span>
                         <span>·</span>
                         <span>{new Date(c.createdAt).toLocaleString()}</span>
                         <div className="ml-auto flex gap-2">
+                          {/* 작성자이면 수정 버튼 노출, 작성자 또는 관리자이면 삭제 버튼 노출 */}
+                          {isOwner && (
+                            <button
+                              onClick={() => setEditing(c)}
+                              className="text-xs px-2 py-1 border rounded"
+                            >
+                              수정
+                            </button>
+                          )}
                           {(isOwner || isAdmin) && (
-                            <>
-                              <button
-                                onClick={() => setEditing(c)}
-                                className="text-xs px-2 py-1 border rounded"
-                              >
-                                수정
-                              </button>
-                              <button
-                                onClick={() => handleDelete(c.id)}
-                                className="text-xs px-2 py-1 border rounded text-red-600"
-                              >
-                                삭제
-                              </button>
-                            </>
+                            <button
+                              onClick={() => handleDelete(c.id)}
+                              className="text-xs px-2 py-1 border rounded text-red-600"
+                            >
+                              삭제
+                            </button>
                           )}
                         </div>
                       </div>
