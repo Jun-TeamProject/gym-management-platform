@@ -113,27 +113,30 @@ export default function PostCard({
             </div>
 
             <div className="hidden md:flex flex-col items-end gap-2">
-              {(isOwner || isAdmin) && onEdit && onDelete && (
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(post);
-                    }}
-                    className="text-xs px-3 py-1 rounded-lg border bg-white hover:bg-gray-50"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(post.id);
-                    }}
-                    className="text-xs px-3 py-1 rounded-lg border text-red-600 bg-white hover:bg-red-50"
-                  >
-                    삭제
-                  </button>
-                </div>
+              {/* 작성자이면 수정 버튼 노출 */}
+              {isOwner && onEdit && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(post);
+                  }}
+                  className="text-xs px-3 py-1 rounded-lg border bg-white hover:bg-gray-50"
+                >
+                  수정
+                </button>
+              )}
+
+              {/* 작성자 또는 관리자이면 삭제 버튼 노출 */}
+              {(isOwner || isAdmin) && onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(post.id);
+                  }}
+                  className="text-xs px-3 py-1 rounded-lg border text-red-600 bg-white hover:bg-red-50"
+                >
+                  삭제
+                </button>
               )}
             </div>
           </div>
