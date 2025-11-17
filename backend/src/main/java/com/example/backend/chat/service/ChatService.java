@@ -6,8 +6,14 @@ import com.example.backend.chat.entity.ChatMessage;
 import com.example.backend.chat.entity.ChatRoom;
 import com.example.backend.chat.repository.ChatMessageRepository;
 import com.example.backend.chat.repository.ChatRoomRepository;
+import com.example.backend.notification.dto.NotificationResponse;
+import com.example.backend.notification.entity.Notification;
+import com.example.backend.notification.entity.NotificationType;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.notification.service.SseEmitterService;
 import com.example.backend.user.entity.User;
 import com.example.backend.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,8 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final SseEmitterService sseEmitterService;
 
     @Transactional
     public ChatRoom getOrCreateChatRoom(Long userId, Long adminId) {
@@ -51,6 +59,40 @@ public class ChatService {
         chatmessage.setIsRead(false);
 
         ChatMessage savedMessage = chatMessageRepository.save(chatmessage);
+
+        Long senderId = msgDto.getSenderId();
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new EntityNotFoundException("발신자를 찾을 수 없습니다."));
+
+        User recipientUser;
+        Long recipientId;
+
+        if (senderId.equals(chatRoom.getUser().getId())) {
+            recipientId = chatRoom.getAdminId();
+            recipientUser = userRepository.findById(recipientId)
+                    .orElseThrow(() -> new EntityNotFoundException("수신자를 찾을 수 없습니다."));
+        } else {
+            recipientId = chatRoom.getUser().getId();
+            recipientUser = chatRoom.getUser();
+        }
+
+        String message = String.format(
+                "%s님으로부터 새 메세지가 도착했습니다.",
+                sender.getRealUsername()
+        );
+
+        Notification notification = Notification.builder()
+                .user(recipientUser)
+                .message(message)
+                .isRead(false)
+                .type(NotificationType.NEW_MESSAGE)
+                .relatedId(chatRoom.getId())
+                .build();
+        Notification savedNotification = notificationRepository.save(notification);
+
+        NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
+        sseEmitterService.sendToUser(recipientId, response);
+
         if(chatmessage.getSenderId()!=1){//어드민이 보낸건 unreadcount update 안함
             int unreadCount = chatMessageRepository.countUnreadMessagesByRoomId(chatRoom.getId(),chatmessage.getSenderId());
             chatRoom.setUnreadCount(unreadCount);
