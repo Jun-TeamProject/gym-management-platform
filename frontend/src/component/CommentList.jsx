@@ -119,7 +119,7 @@ export default function CommentList({ postId, me, isAdmin }) {
                         {c.content}
                       </div>
                       <div className="text-xs text-gray-500 flex items-center gap-2">
-                        <span>{c.user?.name ?? c.user?.email ?? "익명"}</span>
+                        <span>{c.user?.username ?? c.user?.email ?? "익명"}</span>
                         <span>·</span>
                         <span>{new Date(c.createdAt).toLocaleString()}</span>
                         <div className="ml-auto flex gap-2">

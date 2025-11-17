@@ -114,7 +114,7 @@ export default function PostCard({
           <div className="mt-4 flex items-center text-sm text-gray-500 gap-3">
             <span className="flex items-center gap-2">
               <span className="text-gray-700 font-medium">
-                {post.user?.name ?? post.user?.email ?? "익명"}
+                {post.user?.username ?? post.user?.email ?? "익명"}
               </span>
             </span>
             <span>·</span>
