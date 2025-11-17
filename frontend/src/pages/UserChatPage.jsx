@@ -19,6 +19,7 @@ const UserChatPage = () => {
 
     const fetchInitialMessages = useCallback(async (roomId) => {
         try{
+            await chatService.updateUnread(roomId, ADMIN_ID);
             const history = await chatService.getChatHistory(roomId);
             console.log(history);
             setMessages(history);

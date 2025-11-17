@@ -1,13 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import useNotificationStore from "../stores/notificationStore";
+import useAuthStore from "../stores/authStore";
 
 function NotificationPage() {
     const notifications = useNotificationStore((s) => s.notifications);
     const markAsRead = useNotificationStore((s) => s.markAsRead);
+    const user = useAuthStore((s) => s.user);
     const navigate = useNavigate();
 
     const handleNotificationClick = (notif) => {
-        markAsRead(notif.id);
+        if (!notif.isRead) {
+            markAsRead(notif.id);
+        }
 
         if (
             notif.type === "RESERVATION_REQUEST" ||
@@ -15,6 +19,18 @@ function NotificationPage() {
         ) {
             if (notif.relatedId) {
                 navigate("/reservations");
+            }
+        }
+
+        if (notif.type === "NEW_MESSAGE") {
+            if (!user) return;
+
+            if (user.role === "ADMIN") {
+                navigate("/admin/chat", {
+                    state: { roomIdToOpen: notif.relatedId }
+                });
+            } else {
+                navigate("/chat");
             }
         }
     };
