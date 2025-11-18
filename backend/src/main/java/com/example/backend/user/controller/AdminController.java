@@ -7,10 +7,12 @@ import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -59,9 +61,11 @@ public class AdminController {
 
     @GetMapping("/payments")
     public ResponseEntity<List<PaymentHistoryResponse>> getPaymentHistory(
-            @RequestParam(defaultValue = "DAY") String period
-    ) {
-        List<PaymentHistoryResponse> history = adminService.getPaymentHistory(period);
+//            @RequestParam(defaultValue = "DAY") String period
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+            ) {
+        List<PaymentHistoryResponse> history = adminService.getPaymentHistory(startDate, endDate);
         return ResponseEntity.ok(history);
     }
 }

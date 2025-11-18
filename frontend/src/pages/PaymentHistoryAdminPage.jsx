@@ -3,23 +3,55 @@ import { AdminApi } from "../services/AdminApi";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { getDay, getMonth, getYear, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 
 const buttonClass = "px-4 py-2 rounded-lg text-sm font-semibold transition";
 const primaryButtonClass = `${buttonClass} text-white bg-blue-600 hover:bg-blue-700`;
 const secondaryButtonClass = `${buttonClass} text-gray-700 bg-gray-100 hover:bg-gray-200`;
+// const selectClass = "px-4 py-2 rounded-lg text-sm font-semibold transition text-gray-700 bg-gray-100 hover:bg-gray-200 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400";
+const formatApiDate = (date) => {
+    return date.toISOString().split('T')[0];
+};
 
 const PaymentHistoryAdminPage = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [period, setPeriod] = useState("WEEK"); // DAY, WEEK, MONTH
+//   const [period, setPeriod] = useState("WEEK"); // DAY, WEEK, MONTH
+    const [filterType, setFilterType] = useState("WEEK");
+    const [selectedDate, setSelectedDate] = useState(new Date()); // DAY, WEEK, MONTH
   const [viewMode, setViewMode] = useState("LIST"); // LIST, CALENDAR
 
   const fetchPayments = async () => {
+    let startDate, endDate;
+    
     try {
+
+    switch (filterType) {
+        case "DAY":
+            startDate = selectedDate;
+            endDate = selectedDate;
+            break;
+        case "WEEK": 
+            startDate = startOfWeek(selectedDate, { weekStartsOn: 0 });
+            endDate = endOfWeek(selectedDate, { weekStartsOn: 0 });
+            break;
+        case "MONTH":
+            startDate = startOfMonth(selectedDate);
+            endDate = endOfMonth(selectedDate);
+            break;
+        default:
+            startDate = startOfWeek(new Date());
+            endDate = endOfWeek(new Date());
+    }
       setLoading(true);
-      const response = await AdminApi.getPaymentHistory(period);
+      const response = await AdminApi.getPaymentHistory(
+        formatApiDate(startDate),
+        formatApiDate(endDate)
+      );
       setPayments(response.data);
       setError(null);
     } catch (err) {
@@ -32,7 +64,7 @@ const PaymentHistoryAdminPage = () => {
 
   useEffect(() => {
     fetchPayments();
-  }, [period]);
+  }, [filterType]);
 
   const calendarEvents = payments.map((p) => ({
     id: p.orderId,
@@ -62,12 +94,17 @@ const PaymentHistoryAdminPage = () => {
           </button>
         </div>
         <div>
+            <DatePicker
+                selectedDate={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                className="w-32 rounded-lg border-gray-300 border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
           {["DAY", "WEEK", "MONTH"].map((p) => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={() => setFilterType(p)}
               className={
-                period === p ? primaryButtonClass : secondaryButtonClass
+                filterType === p ? primaryButtonClass : secondaryButtonClass
               }
             >
               {p === "DAY" ? "일별" : p === "WEEK" ? "주별" : "월별"}
@@ -79,7 +116,7 @@ const PaymentHistoryAdminPage = () => {
       {/* ---  --- */}
       <div className="p-4 bg-gray-50 rounded-lg border">
         <h3 className="text-lg font-semibold text-gray-800">
-          {period === "DAY" ? "일간" : period === "WEEK" ? "주간" : "월간"} 총
+          {filterType === "DAY" ? "일간" : filterType === "WEEK" ? "주간" : "월간"} 총
           매출 :
           <span className="text-blue-600 ml-2">
             {totalSales.toLocaleString()}원

@@ -20,8 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,28 +135,37 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentHistoryResponse> getPaymentHistory(String period) {
-        LocalDateTime startDate;
-        LocalDate now = LocalDate.now();
-
-        switch (period.toUpperCase()) {
-            case "DAY":
-                startDate = now.atStartOfDay();
-                break;
-            case "WEEK":
-                startDate = now.minusWeeks(1).atStartOfDay();
-                break;
-            case "MONTH":
-                startDate = now.minusMonths(1).atStartOfDay();
-                break;
-            default:
-                startDate = now.minusYears(1).atStartOfDay();
-        }
-
-        List<Payment> payments = paymentRepository.findAllByStatusAndApprovedAtAfterOrderByApprovedAtDesc(
+    public List<PaymentHistoryResponse> getPaymentHistory(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+//        LocalDate now = LocalDate.now();
+        List<Payment> payments = paymentRepository.findAllByStatusAndApprovedAtBetweenOrderByApprovedAtDesc(
                 PaymentStatus.DONE,
-                startDate
+                startDateTime,
+                endDateTime
         );
+
+//        switch (period.toUpperCase()) {
+//            case "DAY":
+//                startDate = now.atStartOfDay();
+//                break;
+//            case "WEEK":
+//                LocalDate sunday = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+//                startDate = sunday.atStartOfDay();
+//                break;
+//            case "MONTH":
+//                LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+//                startDate = firstDayOfMonth.atStartOfDay();
+//                break;
+//            default:
+//                LocalDate firstDayOfYear = now.withDayOfYear(1);
+//                startDate = firstDayOfYear.atStartOfDay();
+//        }
+//
+//        List<Payment> payments = paymentRepository.findAllByStatusAndApprovedAtAfterOrderByApprovedAtDesc(
+//                PaymentStatus.DONE,
+//                startDate
+//        );
 
         return payments.stream()
                 .map(PaymentHistoryResponse::fromEntity)
