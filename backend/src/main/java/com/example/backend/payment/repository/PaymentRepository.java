@@ -20,4 +20,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             PaymentStatus status,
             LocalDateTime afterDate
     );
+
+    List<Payment> findAllByStatusAndApprovedAtBetweenOrderByApprovedAtDesc(
+            PaymentStatus status,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
+
+    long countByStatus(PaymentStatus status);
 }
