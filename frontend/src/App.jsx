@@ -39,9 +39,6 @@ const App = () => {
 
           <Route path="/branches" element={<BranchListPage />} />
           <Route path="/branches/:id" element={<BranchDetailPage />} />
-          <Route path="/community" element={<PostsPage />} />
-          <Route path="/posts" element={<PostsPage />} />
-          <Route path="/posts/:id" element={<PostDetailPage />} />
 
           <Route
             element={
@@ -53,6 +50,9 @@ const App = () => {
             <Route path="/attendances" element={<Calendar />} />
             <Route path="/reservations" element={<ReservationPage />} />
             <Route path="/notifications" element={<NotificationPage />} />
+            <Route path="/community" element={<PostsPage />} />
+            <Route path="/posts" element={<PostsPage />} />
+            <Route path="/posts/:id" element={<PostDetailPage />} />
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}
