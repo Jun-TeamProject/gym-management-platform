@@ -2,12 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BranchApi } from "../services/BranchApi";
 
-/**
- * MapPage - Kakao Maps
- * - REACT_APP_KAKAO_API_KEY (JavaScript key) 필요 (환경변수 또는 .env)
- * - BranchApi.getBranches() 를 호출하여 지점 목록을 받아 위치(주소)로 geocode 후 마커 표시
- */
-
 export default function MapPage() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -23,7 +17,10 @@ export default function MapPage() {
   const DEFAULT_CENTER = { lat: 37.566535, lng: 126.9779692 };
 
   useEffect(() => {
-    const KAKAO_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
+    const KAKAO_KEY =
+      (typeof import.meta !== "undefined" &&
+        import.meta.env?.VITE_KAKAO_MAP_KEY) ||
+      process.env.REACT_APP_KAKAO_API_KEY;
     if (!KAKAO_KEY) {
       console.error("REACT_APP_KAKAO_API_KEY is not set");
       setLoading(false);
@@ -57,7 +54,6 @@ export default function MapPage() {
             level: 4,
           });
           await fetchAndRenderBranches();
-          getUserLocation();
           setLoading(false);
         });
       } catch (err) {
@@ -72,13 +68,11 @@ export default function MapPage() {
       markersRef.current = [];
       overlaysRef.current = [];
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // fetch branch list and geocode addresses
   const fetchAndRenderBranches = async () => {
     try {
-      const res = await BranchApi.getAllBranches(); // BranchApi.getAllBranches() 반환 { data: [ { id, branchName, location, phone, ... } ] }
+      const res = await BranchApi.getAllBranches();
       const list = res.data ?? [];
       setBranches(list);
 
@@ -134,6 +128,7 @@ export default function MapPage() {
       )}</div>
       <div class="mt-3 flex gap-2 justify-end">
         <button data-action="detail" class="px-3 py-1 rounded text-sm bg-blue-600 text-white">상세보기</button>
+        <button data-action="directions" class="px-3 py-1 rounded text-sm border">길찾기</button>
         <button data-action="close" class="px-3 py-1 rounded text-sm border">닫기</button>
       </div>
     `;
@@ -146,6 +141,9 @@ export default function MapPage() {
     });
 
     const btnDetail = overlayDiv.querySelector('[data-action="detail"]');
+    const btnDirections = overlayDiv.querySelector(
+      '[data-action="directions"]'
+    );
     const btnClose = overlayDiv.querySelector('[data-action="close"]');
 
     btnDetail?.addEventListener("click", (e) => {
@@ -155,6 +153,26 @@ export default function MapPage() {
     btnClose?.addEventListener("click", (e) => {
       e.stopPropagation();
       overlay.setMap(null);
+    });
+
+    btnDirections?.addEventListener("click", async (e) => {
+      e.stopPropagation();
+
+      const dLat = Number(lat);
+      const dLng = Number(lng);
+      const name = branch.branchName || branch.location || "목적지";
+
+      if (Number.isFinite(dLat) && Number.isFinite(dLng)) {
+        const toUrl = `https://map.kakao.com/link/to/${encodeURIComponent(
+          name
+        )},${dLat},${dLng}`;
+        window.open(toUrl, "_blank");
+        return;
+      }
+
+      const q = encodeURIComponent(branch.location || branch.branchName || "");
+      const searchUrl = `https://map.kakao.com/search/${q}`;
+      window.open(searchUrl, "_blank");
     });
 
     kakao.maps.event.addListener(marker, "click", () => {
@@ -176,35 +194,94 @@ export default function MapPage() {
     overlaysRef.current = [];
   };
 
-  const getUserLocation = () => {
-    if (!navigator.geolocation || !window.kakao || !mapRef.current) {
-      setLocating(false);
+  const ensureKakaoReady = async () => {
+    const KAKAO_KEY =
+      (typeof import.meta !== "undefined" &&
+        import.meta.env?.VITE_KAKAO_MAP_KEY) ||
+      process.env.REACT_APP_KAKAO_API_KEY;
+    if (!KAKAO_KEY) throw new Error("Kakao key not set");
+
+    if (window.kakao && window.kakao.maps) return window.kakao;
+
+    const src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&libraries=services&autoload=false`;
+    if (!document.querySelector("script[data-kakao-sdk]")) {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.setAttribute("data-kakao-sdk", "true");
+      document.head.appendChild(s);
+    }
+
+    await new Promise((resolve, reject) => {
+      const tryLoad = () => {
+        if (window.kakao && window.kakao.maps) return resolve(window.kakao);
+        if (window.kakao && typeof window.kakao.maps?.load === "function") {
+          window.kakao.maps.load(() => resolve(window.kakao));
+          return;
+        }
+        setTimeout(() => {
+          if (window.kakao && window.kakao.maps) return resolve(window.kakao);
+          tryLoad();
+        }, 200);
+      };
+      tryLoad();
+      setTimeout(() => reject(new Error("Kakao load timeout")), 10000);
+    });
+  };
+
+  const centerOnUser = async () => {
+    try {
+      await ensureKakaoReady();
+    } catch (e) {
+      alert("지도 로드 실패: 카카오 키 또는 네트워크를 확인하세요.");
       return;
     }
+
+    if (!mapRef.current) {
+      alert("지도가 초기화되는 중입니다. 잠시 후 다시 시도하세요.");
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert("브라우저에서 위치 접근을 허용해주세요.");
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const { latitude, longitude } = pos.coords;
         const kakao = window.kakao;
-        const userPos = new kakao.maps.LatLng(latitude, longitude);
+        const userPos = new kakao.maps.LatLng(
+          pos.coords.latitude,
+          pos.coords.longitude
+        );
 
-        new kakao.maps.Marker({
-          map: mapRef.current,
-          position: userPos,
-          image: new kakao.maps.MarkerImage(
-            `data:image/svg+xml;utf8,${encodeURIComponent(
-              `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="#2563eb" stroke="#fff" stroke-width="2"/></svg>`
-            )}`
-          ),
-        });
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setPosition(userPos);
+          userMarkerRef.current.setMap(mapRef.current);
+        } else {
+          userMarkerRef.current = new kakao.maps.Marker({
+            map: mapRef.current,
+            position: userPos,
+            image: new kakao.maps.MarkerImage(
+              `data:image/svg+xml;utf8,${encodeURIComponent(
+                `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="#2563eb" stroke="#fff" stroke-width="2"/></svg>`
+              )}`
+            ),
+          });
+        }
 
-        mapRef.current.setCenter(userPos);
-        setLocating(false);
+        try {
+          mapRef.current.setLevel(4);
+          mapRef.current.panTo(userPos);
+        } catch (e) {}
       },
       (err) => {
         console.warn("geolocation failed", err);
-        setLocating(false);
+        alert(
+          "내 위치를 가져올 수 없습니다. 위치 권한을 허용했는지 확인하세요."
+        );
       },
-      { enableHighAccuracy: true, timeout: 5000 }
+      { enableHighAccuracy: true, timeout: 8000 }
     );
   };
 
