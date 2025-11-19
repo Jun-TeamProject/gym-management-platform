@@ -1,7 +1,7 @@
 import api from "./api";
 
 const authService = {
-    async register(userData){
+    async register(userData) {
         const response = await api.post("/api/auth/register", userData);
         // const {access_token, refresh_token, user} = response.data;
 
@@ -13,7 +13,7 @@ const authService = {
     },
     async login(userData) {
         const response = await api.post("/api/auth/login", userData);
-        const {access_token, refresh_token, user} = response.data;
+        const { access_token, refresh_token, user } = response.data;
 
         localStorage.setItem("accessToken", access_token);
         localStorage.setItem("refreshToken", refresh_token);
@@ -32,10 +32,20 @@ const authService = {
     },
     isAuthenticated() {
         return !!localStorage.getItem("accessToken");
-  },
-    getRole(){
+    },
+    getRole() {
         const user = this.getCurrentUser();
         return user ? user.role : null;
+    },
+
+    async requestPasswordReset(email) {
+        const response = await api.post("/api/auth/forgot-password", { email });
+        return response.data;
+    },
+
+    async resetPassword(token, newPassword) {
+        const response = await api.post("/api/auth/reset-password", { token, newPassword });
+        return response.data;
     },
 }
 export default authService;

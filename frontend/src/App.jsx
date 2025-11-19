@@ -26,6 +26,8 @@ import BranchDetailPage from "./pages/BranchDetailPage";
 import UserChatPage from "./pages/UserChatPage";
 import AdminChatPage from "./pages/AdminChatPage";
 import NotificationPage from "./pages/NotificationPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Map from "./pages/MapPage";
 import MapPage from "./pages/MapPage";
 
@@ -38,6 +40,9 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
+
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           <Route path="/branches" element={<BranchListPage />} />
           <Route path="/branches/:id" element={<BranchDetailPage />} />
