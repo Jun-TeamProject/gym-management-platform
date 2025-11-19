@@ -109,10 +109,12 @@ export default function HomePage() {
               link: "/branches",
             },
 
-            { title: "알림",
-              desc: "만료/예약/상담 실시간 알림.", 
+            {
+              title: "알림",
+              desc: "만료/예약/상담 실시간 알림.",
               emoji: "🔔",
-              link: "/notifications" },
+              link: "/notifications",
+            },
 
             {
               title: "커뮤니티",
@@ -125,6 +127,14 @@ export default function HomePage() {
               title: "AI 추천 운동",
               desc: "개인 맞춤 운동 루틴 생성.",
               emoji: "🤖",
+              // no link -> 카드 형태로만 노출
+            },
+
+            {
+              title: "지도",
+              desc: "지점 위치를 지도에서 확인하고 검색하세요.",
+              emoji: "🗺️",
+              link: "/map",
             },
           ].map((f) => {
             const cardContent = (
@@ -212,6 +222,17 @@ export default function HomePage() {
               );
             }
             if (f.title === "알림") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "지도") {
               return (
                 <Link
                   key={f.title}
