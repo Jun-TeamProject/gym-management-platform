@@ -5,7 +5,7 @@ import {
   getPosts,
   toggleLike,
   updatePost,
-} from "../services/postService";
+} from "../services/PostService";
 import PostCard from "../component/PostCard";
 import PostForm from "../component/PostForm";
 import { useNavigate } from "react-router-dom";
