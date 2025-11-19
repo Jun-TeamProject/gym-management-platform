@@ -1,5 +1,5 @@
 import { BranchApi } from "../services/BranchApi";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
 
@@ -65,6 +65,11 @@ const BranchDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuthStore();
   const isAdmin = user?.role === "ADMIN";
+  const mapRef = useRef(null);
+  const geocoderRef = useRef(null);
+  const branchMarkerRef = useRef(null);
+  const userMarkerRef = useRef(null);
+  const centerUserRef = useRef(false);
 
   const fetchDetails = async () => {
     try {
@@ -81,6 +86,103 @@ const BranchDetailPage = () => {
   useEffect(() => {
     fetchDetails();
   }, [branchId]);
+
+  // init kakao map for branch when branchDetails available
+  useEffect(() => {
+    if (!branchDetails) return;
+    const KAKAO_KEY =
+      (typeof import.meta !== "undefined" &&
+        import.meta.env?.VITE_KAKAO_MAP_KEY) ||
+      process.env.REACT_APP_KAKAO_API_KEY;
+    if (!KAKAO_KEY) {
+      console.warn("Kakao API key not set");
+      return;
+    }
+
+    const src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&libraries=services&autoload=false`;
+    const existing = document.querySelector("script[data-kakao-sdk]");
+    const loadScript = () =>
+      new Promise((resolve, reject) => {
+        if (window.kakao && window.kakao.maps) return resolve();
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.setAttribute("data-kakao-sdk", "true");
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+      });
+
+    (async () => {
+      try {
+        if (!existing) await loadScript();
+        window.kakao.maps.load(async () => {
+          geocoderRef.current = new window.kakao.maps.services.Geocoder();
+          const container = document.getElementById("branch-map");
+          if (!container) return;
+          mapRef.current = new window.kakao.maps.Map(container, {
+            center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+            level: 4,
+          });
+          // geocode branch address and place marker
+          geocoderRef.current.addressSearch(
+            branchDetails.location || "",
+            (result, status) => {
+              if (
+                status === window.kakao.maps.services.Status.OK &&
+                result &&
+                result[0]
+              ) {
+                const { y, x } = result[0];
+                const pos = new window.kakao.maps.LatLng(Number(y), Number(x));
+                mapRef.current.setCenter(pos);
+                if (branchMarkerRef.current)
+                  branchMarkerRef.current.setMap(null);
+                branchMarkerRef.current = new window.kakao.maps.Marker({
+                  map: mapRef.current,
+                  position: pos,
+                });
+                // removed optional center-on-user logic
+              } else {
+                console.warn("branch geocode failed", status);
+              }
+            }
+          );
+          // try to show user location marker (initial, non-blocking)
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (p) => {
+                const userPos = new window.kakao.maps.LatLng(
+                  p.coords.latitude,
+                  p.coords.longitude
+                );
+                userMarkerRef.current = new window.kakao.maps.Marker({
+                  map: mapRef.current,
+                  position: userPos,
+                  image: new window.kakao.maps.MarkerImage(
+                    `data:image/svg+xml;utf8,${encodeURIComponent(
+                      `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"><circle cx="11" cy="11" r="9" fill="#2563eb" stroke="#fff" stroke-width="2"/></svg>`
+                    )}`
+                  ),
+                });
+              },
+              (err) => {
+                // ignore
+              },
+              { enableHighAccuracy: true, timeout: 5000 }
+            );
+          }
+        });
+      } catch (e) {
+        console.error("Failed to init Kakao map in BranchDetailPage", e);
+      }
+    })();
+
+    return () => {
+      if (branchMarkerRef.current) branchMarkerRef.current.setMap(null);
+      if (userMarkerRef.current) userMarkerRef.current.setMap(null);
+    };
+  }, [branchDetails]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -171,6 +273,54 @@ const BranchDetailPage = () => {
           isAdmin={isAdmin}
           onDelete={handleImageDelete}
         />
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow border">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          📍 위치 및 길찾기
+        </h2>
+        <div
+          id="branch-map"
+          style={{ width: "100%", height: 600 }}
+          className="rounded-lg overflow-hidden border"
+        />
+        <div className="mt-3 flex gap-2">
+          {/* 내 위치 버튼 제거 */}
+
+          <button
+            onClick={() => {
+              if (!branchMarkerRef.current) {
+                alert("지점 좌표를 찾는 중입니다.");
+                centerUserRef.current = true;
+                return;
+              }
+
+              const endPos = branchMarkerRef.current.getPosition();
+              const eLat = Number(endPos.getLat());
+              const eLng = Number(endPos.getLng());
+              const name = branchName || branchDetails.location || "목적지";
+
+              if (Number.isFinite(eLat) && Number.isFinite(eLng)) {
+                // open Kakao map 'to' page for the destination (Kakao will show and allow route)
+                const toUrl = `https://map.kakao.com/link/to/${encodeURIComponent(
+                  name
+                )},${eLat},${eLng}`;
+                window.open(toUrl, "_blank");
+                return;
+              }
+
+              // fallback: search by address or name
+              const q = encodeURIComponent(
+                branchDetails.location || branchName || ""
+              );
+              const searchUrl = `https://map.kakao.com/search/${q}`;
+              window.open(searchUrl, "_blank");
+            }}
+            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            길찾기 (카카오맵)
+          </button>
+        </div>
       </div>
     </div>
   );

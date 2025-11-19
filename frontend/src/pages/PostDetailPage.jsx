@@ -5,7 +5,7 @@ import {
   updatePost,
   deletePost,
   toggleLike,
-} from "../services/postService";
+} from "../services/PostService";
 import PostForm from "../component/PostForm";
 import CommentList from "../component/CommentList";
 

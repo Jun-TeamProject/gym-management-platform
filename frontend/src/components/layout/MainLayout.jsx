@@ -25,7 +25,7 @@ function HamburgerButton({ onClick }) {
     </button>
   );
 }
-function Sidebar({ open, userRole = '' }) {
+function Sidebar({ open, userRole = "" }) {
   const Item = ({ to, icon, label, badgeCount }) => {
     const { pathname } = useLocation();
     const active = pathname === to;
@@ -33,7 +33,11 @@ function Sidebar({ open, userRole = '' }) {
       <Link
         to={to}
         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition 
-          ${active ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`}
+          ${
+            active
+              ? "bg-blue-50 text-blue-700"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          }`}
       >
         {icon}
         <span>{label}</span>
@@ -46,13 +50,14 @@ function Sidebar({ open, userRole = '' }) {
       </Link>
     );
   };
-  const isAdmin = userRole === 'ADMIN';
-  const chatPath = isAdmin ? '/admin/chat' : '/chat';
+  const isAdmin = userRole === "ADMIN";
+  const chatPath = isAdmin ? "/admin/chat" : "/chat";
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${open ? "translate-x-0" : "-translate-x-64"
-        }`}
+      className={`fixed top-0 left-0 h-full w-64 bg-white border-r shadow-sm transition-transform ${
+        open ? "translate-x-0" : "-translate-x-64"
+      }`}
     >
       <div className="px-5 py-4 border-b">
         <Link to="/" className="flex items-center gap-2">
@@ -137,6 +142,15 @@ function Sidebar({ open, userRole = '' }) {
             </svg>
           }
         />
+        <Item
+          to="/map"
+          label="지도"
+          icon={
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
+            </svg>
+          }
+        />
       </nav>
     </aside>
   );
@@ -148,13 +162,14 @@ export default function MainLayout() {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const userRole = user?.role || '';
+  const userRole = user?.role || "";
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const { connectSse, disconnectSse, fetchNotifications, } = useNotificationStore();
+  const { connectSse, disconnectSse, fetchNotifications } =
+    useNotificationStore();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -174,8 +189,9 @@ export default function MainLayout() {
 
       {/* Header */}
       <header
-        className={`sticky top-0 z-20 bg-white/70 backdrop-blur border-b ${open ? "ml-64" : "ml-0"
-          } transition-all`}
+        className={`sticky top-0 z-20 bg-white/70 backdrop-blur border-b ${
+          open ? "ml-64" : "ml-0"
+        } transition-all`}
       >
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -199,9 +215,7 @@ export default function MainLayout() {
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-sm font-medium">
-                  {user.username}님
-                </span>
+                <span className="text-sm font-medium">{user.username}님</span>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100"
