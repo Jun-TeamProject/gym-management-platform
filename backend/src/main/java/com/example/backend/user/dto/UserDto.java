@@ -22,6 +22,7 @@ public class UserDto {
     private String email;
     private String profileImageUrl;
     private String role;
+    private String provider;
     private String fullName;
     private String phoneNumber;
     private String bio;
@@ -54,6 +55,7 @@ public class UserDto {
                 .email(user.getEmail())
                 .profileImageUrl(user.getProfileImageUrl())
                 .role(user.getRole().getKey())
+                .provider(user.getProvider() != null ? user.getProvider().name() : "LOCAL")
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .bio(user.getBio())

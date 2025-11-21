@@ -81,7 +81,6 @@ public class User implements UserDetails {
 
     private LocalDate birthdate;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
     @JsonIgnoreProperties({"users"})
@@ -92,6 +91,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
