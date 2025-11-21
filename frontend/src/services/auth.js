@@ -47,5 +47,13 @@ const authService = {
         const response = await api.post("/api/auth/reset-password", { token, newPassword });
         return response.data;
     },
+
+    async withdraw(password) {
+        const data = password ? { password: password } : {};
+        const response = await api.post("/api/users/withdraw", data);
+
+        this.logout();
+        return response.data;
+    }
 }
 export default authService;

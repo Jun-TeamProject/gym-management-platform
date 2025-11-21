@@ -105,8 +105,12 @@ const ReservationPage = () => {
           });
       }
       // CANCELLED 상태의 예약을 삭제하는 경우
-    }else if (user.id === memberId && status === "CANCELLED") {
-        if (window.confirm(message + "\n\n 예약을 삭제 하시겠습니까?")) {
+    } else if (status === "CANCELLED" && (user.id === memberId || user.role === "TRAINER")) {
+      const confirmMsg = user.role === "TRAINER" 
+        ? "\n\n[취소된 예약]입니다. 확인하시고 캘린더에서 삭제하시겠습니까?"
+        : "\n\n 예약을 삭제 하시겠습니까?";
+
+        if (window.confirm(message + confirmMsg)) {
           ReservationApi.deleteReservation(id)
             .then(() => {
                 alert("예약이 삭제되었습니다.");

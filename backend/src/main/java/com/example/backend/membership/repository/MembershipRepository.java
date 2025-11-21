@@ -23,4 +23,5 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     List<Membership> findByEndDateAndStatus(LocalDate endDate, Membership.MembershipStatus status);
     List<Membership> findByPtCountRemainingAndStatus(int count, Membership.MembershipStatus status);
+    List<Membership> findAllByUserIdAndStatus(Long userId, Membership.MembershipStatus status);
 }
