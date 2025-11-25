@@ -1,6 +1,13 @@
 import { useState } from "react";
 import CommentList from "./CommentList";
 
+const stripHtml = (html) => {
+  if (!html) return "";
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
 export default function PostCard({
   post,
   me,
@@ -94,7 +101,7 @@ export default function PostCard({
               </div>
 
               <p className="mt-2 text-gray-700 text-sm md:text-base leading-relaxed break-words max-h-28 overflow-hidden">
-                {post.content}
+                {stripHtml(post.content)}
               </p>
 
               {post.fileUrl && (
