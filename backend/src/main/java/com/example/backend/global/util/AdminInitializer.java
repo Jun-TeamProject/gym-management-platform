@@ -7,9 +7,11 @@ import com.example.backend.user.entity.Provider;
 import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
 import com.example.backend.user.repository.UserRepository;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -18,21 +20,69 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Order(1)
 public class AdminInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final BranchRepository branchRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private record BranchInfo(String name, String location, String phone, List<String> imageUrls) {
+    }
+
+
     @Override
     public void run(String... args) throws Exception {
+        createInitialBranches();
         Branch defaultBranch = createDefaultBranch();
+
+        Branch gangnamBranch = branchRepository.findByBranchName("강남점")
+                .orElseThrow(() -> new RuntimeException(" (AdminInitializer) "));
         // ADMIN 계정 생성
         createAdminUser(defaultBranch);
 
         // 필요시 테스트용 계정도 생성 가능
-        createInitialBranches();
 
+        // 기본 트레이너 두명 생성
+        createTrainerUsers(gangnamBranch);
+
+    }
+
+    private void createInitialBranches() {
+
+        List<String> gangnamImages = List.of(
+                "/images-init/cardio1.webp",
+                "/images-init/machine1.webp",
+                "/images-init/weight1.webp"
+        );
+
+        List<String> haewoondaeImages = List.of(
+                "/images-init/cardio2.webp",
+                "/images-init/machine2.webp",
+                "/images-init/weight2.webp"
+        );
+
+        List<BranchInfo> branches = List.of(
+                new BranchInfo("강남점", "서울특별시 강남구", "02-123-1234", gangnamImages),
+                new BranchInfo("해운대점", "부산광역시 해운대구", "051-123-1234", haewoondaeImages),
+                new BranchInfo("홍대점", "서울특별시 마포구", "02-456-4567", List.of())
+        );
+
+        for (BranchInfo info : branches) {
+            if (branchRepository.findByBranchName(info.name).isEmpty()) {
+                Branch branch = Branch.builder()
+                        .branchName(info.name)
+                        .location(info.location)
+                        .phone(info.phone)
+                        .facilityImageUrls(info.imageUrls)
+                        .type(BranchType.REGULAR)
+                        .build();
+                branchRepository.save(branch);
+                log.info(" {} 지점이 생성되었습니다.", info.name);
+            } else {
+                log.info(" {} 지점이 이미 존재합니다.", info.name);
+            }
+        }
     }
 
     private Branch createDefaultBranch() {
@@ -80,34 +130,43 @@ public class AdminInitializer implements CommandLineRunner {
         }
     }
 
+    private void createTrainerUsers(Branch branch) {
+        final String TRAINER1_EMAIL = "trainer1@trainer.com";
+        if (userRepository.findByEmail(TRAINER1_EMAIL).isEmpty()) {
+            User trainer1 = User.builder()
+                    .username("김종국")
+                    .email(TRAINER1_EMAIL)
+                    .password(passwordEncoder.encode("trainer1234"))
+                    .provider(Provider.LOCAL)
+                    .role(Role.TRAINER)
+                    .branch(branch)
+                    .profileImageUrl("/images-init/trainer1.webp")
+                    .build();
+            userRepository.save(trainer1);
+            log.info("✅ TRAINER 1 . (Name: 김종국, : {})", trainer1.getRealUsername(), branch.getBranchName());
+        }
 
-    private void createInitialBranches() {
-        List<BranchInfo> branches = List.of(
-                new BranchInfo("강남점", "서울특별시 강남구", "02-123-1234"),
-                new BranchInfo("해운대점", "부산광역시 해운대구", "051-123-1234"),
-                new BranchInfo("홍대점", "서울특별시 마포구", "02-456-4567")
-        );
-
-        for (BranchInfo info: branches) {
-            if (branchRepository.findByBranchName(info.name).isEmpty()){
-                Branch branch = Branch.builder()
-                        .branchName(info.name)
-                        .location(info.location)
-                        .phone(info.phone)
-                        .type(BranchType.REGULAR)
-                        .build();
-                branchRepository.save(branch);
-                log.info(" {} 지점이 생성되었습니다.", info.name);
-            }else {
-                log.info(" {} 지점이 이미 존재합니다.", info.name);
-            }
+        // 2.
+        final String TRAINER2_EMAIL = "trainer2@trainer.com";
+        if (userRepository.findByEmail(TRAINER2_EMAIL).isEmpty()) {
+            User trainer2 = User.builder()
+                    .username("양치승")
+                    .email(TRAINER2_EMAIL)
+                    .password(passwordEncoder.encode("trainer1234"))
+                    .provider(Provider.LOCAL)
+                    .role(Role.TRAINER)
+                    .branch(branch)
+                    .profileImageUrl("/images-init/trainer2.webp")
+                    .build();
+            userRepository.save(trainer2);
+            log.info("✅ TRAINER 2 . (Name: 양치승, : {})", trainer2.getRealUsername(), branch.getBranchName());
         }
     }
 
-    @RequiredArgsConstructor
-    private static class BranchInfo {
-        final String name;
-        final String location;
-        final String phone;
-    }
+//    @RequiredArgsConstructor
+//    private static class BranchInfo {
+//        final String name;
+//        final String location;
+//        final String phone;
+//    }
 }

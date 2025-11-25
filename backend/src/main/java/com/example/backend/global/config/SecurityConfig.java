@@ -59,7 +59,12 @@ public class SecurityConfig {
                                         "/oauth2/**",
                                         "/login/oauth2/**",
                                         "/h2-console/**",
-                                        "/error"
+                                        "/api/branches",
+                                        "/api/products",
+                                        "/error",
+                                        "/images/**",
+                                        "/images-init/**",
+                                        "/ws/**"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
@@ -67,6 +72,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/branches/**").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/branches/**").hasAuthority("ADMIN")
                                 .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN")
+                                .requestMatchers("/api/users/trainers").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -87,7 +93,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendUrl));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));

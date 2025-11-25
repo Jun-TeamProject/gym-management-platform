@@ -1,21 +1,57 @@
 import { useEffect, useMemo, useState } from "react";
-import { createPost, deletePost, getPosts, toggleLike, updatePost } from "../services/postService";
+import {
+  createPost,
+  deletePost,
+  getPosts,
+  toggleLike,
+  updatePost,
+} from "../services/PostService";
 import PostCard from "../component/PostCard";
 import PostForm from "../component/PostForm";
+import { useNavigate } from "react-router-dom";
+
+/** JWT에서 me(id, role 등) 꺼내는 간단 헬퍼 */
+function getMeFromToken() {
+  const token = localStorage.getItem("accessToken");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return {
+      id: payload.id ?? payload.userId ?? null,
+      role: payload.role ?? null,
+      email: payload.email ?? null,
+      username: payload.username ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
 
 export default function PostsPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
-  const [data, setData] = useState({ content: [], totalPages: 0, number: 0, size: 10, totalElements: 0 });
+  const [data, setData] = useState({
+    content: [],
+    totalPages: 0,
+    number: 0,
+    size: 10,
+    totalElements: 0,
+  });
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [filterType, setFilterType] = useState(""); // "" | "NOTICE" | "QNA" | "FREE"
+  const [filterMine, setFilterMine] = useState(false); // 내 글 필터
+
+  const navigate = useNavigate();
+
+  const me = getMeFromToken();
+  const isAdmin = me?.role === "ADMIN";
 
   const load = async (p = page) => {
     setLoading(true);
     try {
       const res = await getPosts(p, size);
-      // Spring Data Page 그대로 사용
       setData(res.data);
     } catch (e) {
       console.error(e);
@@ -25,8 +61,12 @@ export default function PostsPage() {
     }
   };
 
-  useEffect(() => { load(0); }, []); // 첫 로드
-  useEffect(() => { load(page); }, [page]); // 페이지 변경 시
+  useEffect(() => {
+    load(0);
+  }, []);
+  useEffect(() => {
+    load(page);
+  }, [page]);
 
   const pages = useMemo(() => {
     const arr = [];
@@ -39,7 +79,7 @@ export default function PostsPage() {
     try {
       await createPost(payload);
       setEditing(null);
-      setPage(0); 
+      setPage(0);
       await load(0);
     } catch (e) {
       console.error(e);
@@ -71,7 +111,11 @@ export default function PostsPage() {
       await load(page);
     } catch (e) {
       console.error(e);
-      alert("삭제에 실패했습니다.");
+      alert(
+        e.response?.data?.message
+          ? `삭제 실패: ${e.response.data.message}`
+          : "삭제에 실패했습니다."
+      );
     }
   };
 
@@ -84,39 +128,113 @@ export default function PostsPage() {
     }
   };
 
+  // client-side filter for simple UX (server-side paging remains)
+  const filtered = (data.content ?? []).filter((p) => {
+    if (filterType && (p.type ?? "") !== filterType) return false;
+    if (filterMine && me) {
+      const ownerId = p.user?.id ?? p.user?.userId ?? null;
+      return ownerId != null && Number(ownerId) === Number(me.id);
+    }
+    return true;
+  });
+
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <header className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">게시글</h1>
-        <button onClick={() => setEditing({})} className="px-4 py-2 rounded-lg border bg-black text-white">
-          새 글
-        </button>
+      <header className="mb-4">
+        <div>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold">게시글</h1>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setEditing({})}
+                className="px-4 py-2 rounded-lg border bg-black text-white"
+              >
+                새 글
+              </button>
+            </div>
+          </div>
+
+          <div className="flex mt-6 gap-2 justify-center">
+            <button
+              onClick={() => setFilterType("")}
+              className={`px-3 py-1 rounded border ${
+                filterType === "" ? "bg-black text-white" : ""
+              }`}
+            >
+              전체
+            </button>
+
+            <button
+              onClick={() => setFilterType("NOTICE")}
+              className={`px-3 py-1 rounded border ${
+                filterType === "NOTICE" ? "bg-black text-white" : ""
+              }`}
+            >
+              NOTICE
+            </button>
+            <button
+              onClick={() => setFilterType("QNA")}
+              className={`px-3 py-1 rounded border ${
+                filterType === "QNA" ? "bg-black text-white" : ""
+              }`}
+            >
+              QNA
+            </button>
+            <button
+              onClick={() => setFilterType("FREE")}
+              className={`px-3 py-1 rounded border ${
+                filterType === "FREE" ? "bg-black text-white" : ""
+              }`}
+            >
+              FREE
+            </button>
+
+            {me && (
+              <button
+                onClick={() => setFilterMine((s) => !s)}
+                className={`px-3 py-1 rounded border ${
+                  filterMine ? "bg-blue-600 text-white" : ""
+                }`}
+              >
+                내 글
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
+      {/* PostForm은 모달로 렌더링 */}
       {editing && (
-        <div className="mb-4">
-          <PostForm
-            initial={editing && editing.id ? editing : null}
-            onSubmit={editing?.id ? handleUpdate : handleCreate}
-            onCancel={() => setEditing(null)}
-            busy={busy}
-          />
-        </div>
+        <PostForm
+          initial={editing && editing.id ? editing : null}
+          onSubmit={editing?.id ? handleUpdate : handleCreate}
+          onCancel={() => setEditing(null)}
+          busy={busy}
+          modal={true}
+        />
       )}
 
       {loading ? (
         <div className="text-gray-500">불러오는 중…</div>
       ) : (
         <>
-          {data.content?.length ? (
-            data.content.map((p) => (
-              <PostCard
-                key={p.id}
-                post={p}
-                onEdit={() => setEditing(p)}
-                onDelete={handleDelete}
-                onToggleLike={handleToggleLike}
-              />
+          {filtered.length ? (
+            filtered.map((p) => (
+              <div key={p.id} className="mb-6">
+                {" "}
+                {/* 카드 간격 증가 */}
+                <PostCard
+                  post={p}
+                  me={me}
+                  isAdmin={isAdmin}
+                  // 리스트에서는 상호작용 버튼 숨기고 카운트만 노출
+                  showActions={false}
+                  onEdit={null}
+                  onDelete={null}
+                  onToggleLike={null}
+                  onOpen={() => navigate(`/posts/${p.id}`)}
+                />
+              </div>
             ))
           ) : (
             <div className="text-gray-500">게시글이 없습니다.</div>
@@ -135,7 +253,9 @@ export default function PostsPage() {
                 <button
                   key={idx}
                   onClick={() => setPage(idx)}
-                  className={`px-3 py-1 rounded border ${idx === page ? "bg-black text-white" : ""}`}
+                  className={`px-3 py-1 rounded border ${
+                    idx === page ? "bg-black text-white" : ""
+                  }`}
                 >
                   {idx + 1}
                 </button>
@@ -143,7 +263,9 @@ export default function PostsPage() {
               <button
                 className="px-3 py-1 rounded border"
                 disabled={page >= data.totalPages - 1}
-                onClick={() => setPage((p) => Math.min(data.totalPages - 1, p + 1))}
+                onClick={() =>
+                  setPage((p) => Math.min(data.totalPages - 1, p + 1))
+                }
               >
                 다음
               </button>

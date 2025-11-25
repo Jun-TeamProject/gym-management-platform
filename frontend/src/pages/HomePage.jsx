@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuthStore(); 
-
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <>
@@ -78,32 +77,65 @@ export default function HomePage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: "출석 체크",
-              desc: "QR/원클릭 출석, 월간 기록 열람.",
-              emoji: "✅",
+              title: "프로필",
+              desc: "회원 프로필 수정, 게시글·댓글.",
+              emoji: "👥",
+              link: "/myprofile",
             },
             {
               title: "PT 예약",
               desc: "트레이너 선택, 일정 조율, 알림까지.",
               emoji: "📅",
+              link: "/reservations",
             },
+            {
+              title: "출석 체크",
+              desc: "QR/원클릭 출석, 월간 기록 열람.",
+              emoji: "✅",
+              link: "/attendances",
+            },
+
             {
               title: "이용권/결제",
               desc: "헬스권·PT권 관리, PG 연동 승인.",
               emoji: "💳",
               link: "/products",
             },
+
             {
-              title: "프로필/커뮤니티",
-              desc: "회원 프로필 수정, 게시글·댓글.",
-              emoji: "👥",
-            },
-            {
-              title: "지점 관리",
-              desc: "지점별 트레이너/시설/매출 통계.",
+              title: "지점 소개",
+              desc: "지점별 트레이너/시설.",
               emoji: "📈",
+              link: "/branches",
             },
-            { title: "알림", desc: "만료/예약/상담 실시간 알림.", emoji: "🔔" },
+
+            {
+              title: "알림",
+              desc: "만료/예약/상담 실시간 알림.",
+              emoji: "🔔",
+              link: "/notifications",
+            },
+
+            {
+              title: "커뮤니티",
+              desc: "게시글 작성, 댓글, 좋아요. 운동정보 공유.",
+              emoji: "💬",
+              link: "/community",
+            },
+
+            {
+              title: "AI 추천 운동",
+              desc: "개인 맞춤 운동 루틴 생성.",
+              emoji: "🤖",
+              // no link -> 카드 형태로만 노출
+            },
+
+            {
+              title: "지도",
+              desc: "지점 위치를 지도에서 확인하고 검색하세요.",
+              emoji: "🗺️",
+              link: "/map",
+            },
           ].map((f) => {
             const cardContent = (
               <>
@@ -112,7 +144,95 @@ export default function HomePage() {
                 <p className="mt-1 text-gray-600 text-sm">{f.desc}</p>
               </>
             );
+            if (f.title === "출석 체크") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
             if (f.title === "이용권/결제") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "PT 예약") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "커뮤니티") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "AI 추천 운동") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "프로필") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "지점 소개") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "알림") {
+              return (
+                <Link
+                  key={f.title}
+                  to={f.link}
+                  className="block rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-blue-300"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+            if (f.title === "지도") {
               return (
                 <Link
                   key={f.title}
@@ -144,20 +264,22 @@ export default function HomePage() {
               지점별 관리와 데이터 기반 운영.
             </p>
           </div>
-          <div className="flex gap-3">
-            <Link
-              to="/register"
-              className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
-            >
-              회원가입
-            </Link>
-            <Link
-              to="/login"
-              className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
-            >
-              로그인
-            </Link>
-          </div>
+          {!isAuthenticated && (
+            <div className="flex gap-3">
+              <Link
+                to="/register"
+                className="px-5 py-3 rounded-xl font-semibold bg-white text-blue-700 hover:bg-blue-50"
+              >
+                회원가입
+              </Link>
+              <Link
+                to="/login"
+                className="px-5 py-3 rounded-xl font-semibold bg-blue-500 hover:bg-blue-700"
+              >
+                로그인
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

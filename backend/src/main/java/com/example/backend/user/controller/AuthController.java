@@ -1,9 +1,8 @@
 package com.example.backend.user.controller;
 
-import com.example.backend.user.dto.AuthRequest;
-import com.example.backend.user.dto.AuthResponse;
-import com.example.backend.user.dto.RegisterRequest;
+import com.example.backend.user.dto.*;
 import com.example.backend.user.service.AuthService;
+import com.example.backend.user.service.PasswordResetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
@@ -30,5 +30,19 @@ public class AuthController {
             @Valid @RequestBody AuthRequest request
     ) {
         return ResponseEntity.ok(authService.authenticate(request));
+    }
+
+    // 비밀번호 재설정 링크 요청
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody PasswordResetRequest request) {
+        passwordResetService.requestPasswordReset(request.getEmail());
+        return ResponseEntity.ok("비밀번호 재설정 링크가 이메일로 전송되었습니다.");
+    }
+
+    // 비밀번호 실제 변경 요청
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetConfirmRequest request) {
+        passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 }

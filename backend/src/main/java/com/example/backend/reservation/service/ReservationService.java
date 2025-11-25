@@ -1,8 +1,17 @@
 package com.example.backend.reservation.service;
 
+import com.example.backend.membership.entity.Membership;
+import com.example.backend.membership.repository.MembershipRepository;
+import com.example.backend.notification.dto.NotificationResponse;
+import com.example.backend.notification.entity.Notification;
+import com.example.backend.notification.entity.NotificationType;
+import com.example.backend.notification.repository.NotificationRepository;
+import com.example.backend.notification.service.SseEmitterService;
+import com.example.backend.product.entity.Product;
 import com.example.backend.reservation.dto.ReservationRequest;
 import com.example.backend.reservation.dto.ReservationResponse;
 import com.example.backend.reservation.entity.Reservation;
+import com.example.backend.reservation.entity.Status;
 import com.example.backend.reservation.repository.ReservationRepository;
 import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
@@ -17,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -28,10 +39,12 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
+    private final MembershipRepository membershipRepository;
+    private final NotificationRepository notificationRepository;
+    private final SseEmitterService sseEmitterService;
 
     public ReservationResponse createReservation(ReservationRequest request) {
         User currentUser = authenticationService.getCurrentUser();
-
         // 트레이너 존재 확인
         User trainer = userRepository.findById(request.getTrainerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
@@ -46,16 +59,60 @@ public class ReservationService {
             throw new UnauthorizedException("Only members can create reservations");
         }
 
+        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                currentUser.getId(),
+                Product.ProductType.PT
+        ).orElseThrow(() -> new IllegalArgumentException("사용 가능한 PT 이용권이 없습니다. 이용권을 먼저 구매해주세요."));
+
+        if (ptMembership.getPtCountRemaining() <= 0) {
+            throw new IllegalArgumentException("남은 PT 이용권이 없습니다. 추가 결제가 필요합니다.");
+        }
+
+        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime endTime = request.getEndTime();
+
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("시작시간이 이미 지났습니다.");
+        }
+
+        if (startTime.isAfter(LocalDateTime.now().plusWeeks(2))){
+            throw new IllegalArgumentException("2weeks");
+        }
+
+        if (!endTime.isAfter(startTime)){
+            throw new IllegalArgumentException("마치는 시간이 시작 시간보다 빠릅니다.");
+        }
+
+        boolean isOverlapping = reservationRepository.existsOverlappingReservation(
+                trainer.getId(), startTime, endTime
+        );
+        if (isOverlapping) {
+            throw new IllegalArgumentException("중복된 타임입니다.");
+        }
+
         Reservation reservation = Reservation.builder()
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .status(request.getStatus())
+                .startTime(startTime)
+                .endTime(endTime)
+                .status(Status.PENDING)
                 .memo(request.getMemo())
                 .member(currentUser)
                 .trainer(trainer)
                 .build();
 
         reservation = reservationRepository.save(reservation);
+
+        String message = String.format("%s 회원님이 %s PT 예약을 신청했습니다.",
+                currentUser.getRealUsername(),
+                reservation.getStartTime().format(DateTimeFormatter.ofPattern("M/d HH:mm"))
+        );
+
+        sendReservationNotification(
+                trainer,
+                message,
+                NotificationType.RESERVATION_REQUEST,
+                reservation.getId()
+        );
+
         return ReservationResponse.fromEntity(reservation);
     }
 
@@ -124,6 +181,72 @@ public class ReservationService {
         return reservations.map(ReservationResponse::fromEntity);
     }
 
+    // 트레이너 받은 예약 확정
+    public ReservationResponse confirmReservation (Long reservationId) {
+        User currentUser = authenticationService.getCurrentUser();
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        if (!reservation.getTrainer().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+            throw new UnauthorizedException("You are not authorized to confirm this reservation");
+        }
+
+        if (reservation.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException(" PENDING ");
+        }
+
+        User member = reservation.getMember();
+
+        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                member.getId(),
+                Product.ProductType.PT
+        ).orElseThrow(() -> new IllegalStateException("해당 회원은 활성화된 PT 이용권이 없습니다."));
+
+        boolean usePtSuccess = ptMembership.usePtSession();
+
+        if (!usePtSuccess) {
+            throw new IllegalStateException("남은 PT 횟수가 없습니다. 예약을 승인할 수 없습니다.");
+        }
+
+        int countLeft = ptMembership.getPtCountRemaining();
+
+        if (countLeft == 5 || countLeft == 1) {
+            String message = String.format(
+                    "회원님의 '%s'이 %d회 남았습니다.",
+                    ptMembership.getProduct().getName(),
+                    countLeft
+            );
+
+            Notification notification = Notification.builder()
+                    .user(member)
+                    .message(message)
+                    .isRead(false)
+                    .type(NotificationType.MEMBERSHIP_EXPIRY)
+                    .build();
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
+            sseEmitterService.sendToUser(member.getId(), response);
+        }
+
+        reservation.setStatus(Status.RESERVED);
+
+        String message = String.format("%s 트레이너가 %s PT 예약을 승인했습니다.",
+                reservation.getTrainer().getRealUsername(),
+                reservation.getStartTime().format(DateTimeFormatter.ofPattern("M/d HH:mm"))
+        );
+
+        sendReservationNotification(
+                reservation.getMember(),
+                message,
+                NotificationType.RESERVATION_CONFIRMED,
+                reservation.getId()
+        );
+
+        return ReservationResponse.fromEntity(reservation);
+    }
 
     // 예약 수정
     public ReservationResponse updateReservation(Long reservationId, ReservationRequest request) {
@@ -165,12 +288,65 @@ public class ReservationService {
             throw new UnauthorizedException("You are not authorized to delete this reservation");
         }
 
+        if (reservation.getStatus() != Status.CANCELLED){
+            throw new IllegalStateException(" CANCELLED ");
+        }
         reservationRepository.deleteById(reservationId);
+    }
+
+    //예약 취소
+    public ReservationResponse cancelReservation(Long reservationId) {
+        User currentUser = authenticationService.getCurrentUser();
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        if (!isAdminOrRelatedUser(currentUser, reservation)) {
+            throw new UnauthorizedException("You are not authorized to cancel this reservation");
+        }
+
+        if (reservation.getStatus() == Status.COMPLETED || reservation.getStatus() == Status.CANCELLED){
+            throw new IllegalStateException("Already cancelled or done");
+        }
+
+        if (reservation.getStatus() == Status.RESERVED) {
+            User member = reservation.getMember();
+
+            Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                    member.getId(),
+                    Product.ProductType.PT
+            ).orElseThrow(() -> new IllegalStateException("Cannot find PT membership"));
+
+            ptMembership.restorePtSession();
+            membershipRepository.save(ptMembership);
+        }
+
+        reservation.setStatus(Status.CANCELLED);
+        reservation = reservationRepository.save(reservation);
+
+        return ReservationResponse.fromEntity(reservation);
     }
 
     private boolean isAdminOrRelatedUser(User currentUser, Reservation reservation) {
         return currentUser.getRole() == Role.ADMIN ||
                 reservation.getMember().getId().equals(currentUser.getId()) ||
                 reservation.getTrainer().getId().equals(currentUser.getId());
+    }
+
+    private void sendReservationNotification(User user, String message, NotificationType type, Long reservationId) {
+        Notification notification = Notification.builder()
+                .user(user)
+                .message(message)
+                .isRead(false)
+                .type(type)
+                .relatedId(reservationId)
+                .build();
+
+        Notification savedNotification = notificationRepository.save(notification);
+
+        NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
+        sseEmitterService.sendToUser(user.getId(), response);
+
+        log.info("SSE notification sent to user {} for type {}", user.getId(), type);
     }
 }

@@ -128,7 +128,7 @@ public class PaymentService {
 //
 //        } catch (Exception e) {
 //            log.error("결제 승인 실패: orderId={}, error={}", request.getOrderId(), e.getMessage());
-//            // (TODO: 결제 실패 시 Payment 상태 'CANCELED' 또는 'FAILED'로 변경 로직)
+//            // (TODO: 결제 실패 시 Payment 상태 'CANCELLED' 또는 'FAILED'로 변경 로직)
 //            throw new RuntimeException("결제 승인에 실패했습니다: " + e.getMessage());
 //        }
 //    }

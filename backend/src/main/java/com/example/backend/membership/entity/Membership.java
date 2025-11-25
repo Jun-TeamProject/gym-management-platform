@@ -6,16 +6,15 @@ import com.example.backend.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "T_MEMBERSHIP")
 @Getter
+@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -107,6 +106,23 @@ public class Membership {
         this.product = product;
     }
 
-    // (추가) 이용권 연장, PT 횟수 차감 등의 비즈니스 메서드
+    public boolean usePtSession() {
+        if (this.product.getType() != Product.ProductType.PT || this.ptCountRemaining <= 0) {
+            return false;
+        }
+
+        this.ptCountRemaining -= 1;
+        return true;
+    }
+
+    // PT 취소 시 1회 복구
+    public void restorePtSession() {
+        if (this.product.getType() != Product.ProductType.PT) {
+
+        }
+        this.ptCountRemaining += 1;
+    }
+
+    // (추가) 이용권 연장 등의 비즈니스 메서드
 }
 

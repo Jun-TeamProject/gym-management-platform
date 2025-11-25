@@ -33,7 +33,7 @@ const ProductPurchaseList = () => {
   const handlePurchase = (productId) => {
     if (!isAuthenticated || user.role !== 'MEMBER') {
         alert("회원권 구매는 회원으로 로그인해야 가능합니다.");
-        navigate('/login');
+        navigate('/');
         return;
     }
     navigate(`/checkout/${productId}`);

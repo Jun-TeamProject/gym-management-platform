@@ -17,6 +17,19 @@ import AdminOverview from "./pages/AdminOverview";
 import Calendar from "./component/Calender";
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 import PostsPage from "./pages/PostsPage";
+import PostDetailPage from "./pages/PostDetailPage";
+import ReservationPage from "./pages/ReservationPage";
+import PaymentHistoryAdminPage from "./pages/PaymentHistoryAdminPage";
+import UserDetailPage from "./pages/UserDetailPage";
+import BranchListPage from "./pages/BranchListPage";
+import BranchDetailPage from "./pages/BranchDetailPage";
+import UserChatPage from "./pages/UserChatPage";
+import AdminChatPage from "./pages/AdminChatPage";
+import NotificationPage from "./pages/NotificationPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import Map from "./pages/MapPage";
+import MapPage from "./pages/MapPage";
 
 const App = () => {
   return (
@@ -28,7 +41,11 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
 
-          <Route path="/posts" element={<PostsPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+          <Route path="/branches" element={<BranchListPage />} />
+          <Route path="/branches/:id" element={<BranchDetailPage />} />
 
           <Route
             element={
@@ -37,7 +54,13 @@ const App = () => {
           >
             <Route path="/myprofile" element={<MyProfile />} />
             <Route path="/products" element={<ProductPurchaseList />} />
-            <Route path="/attendances" element={<Calendar />}/>
+            <Route path="/attendances" element={<Calendar />} />
+            <Route path="/reservations" element={<ReservationPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
+            <Route path="/community" element={<PostsPage />} />
+            <Route path="/posts" element={<PostsPage />} />
+            <Route path="/posts/:id" element={<PostDetailPage />} />
+            <Route path="/map" element={<MapPage />} />
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}
@@ -45,6 +68,7 @@ const App = () => {
             <Route path="/checkout/:productId" element={<CheckoutPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/purchases" element={<PaymentHistoryPage />} />
+            <Route path="/chat" element={<UserChatPage />} />
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>
 
@@ -55,6 +79,15 @@ const App = () => {
             <Route path="/admin/products" element={<ProductList />} />
             <Route path="/admin/branches" element={<BranchList />} />
             <Route path="/admin/overview" element={<AdminOverview />} />
+            <Route path="/admin/chat" element={<AdminChatPage />} />
+            <Route
+              path="/admin/payments"
+              element={<PaymentHistoryAdminPage />}
+            />
+            <Route
+              path="/admin/users/detail/:userId"
+              element={<UserDetailPage />}
+            />
 
             {/* <Route path="/payment/fail" element={<PaymentFailPage />} /> */}
           </Route>

@@ -1,13 +1,15 @@
 package com.example.backend.post.service;
 
 import com.example.backend.like.repository.LikeRepository;
+import com.example.backend.comment.repository.CommentRepository;
 import com.example.backend.post.dto.PostResponse;
 import com.example.backend.post.dto.PostRequest;
 import com.example.backend.post.entity.Post;
+import com.example.backend.post.entity.Type;
+import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.exception.UnauthorizedException;
-import com.example.backend.comment.repository.CommentRepository;
 import com.example.backend.post.repository.PostRepository;
 import com.example.backend.user.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,10 @@ public class PostService {
 
     public PostResponse createPost(PostRequest request) {
         User currentUser = authenticationService.getCurrentUser();
+
+        if (request.getType() == Type.NOTICE && currentUser.getRole() != Role.ADMIN) {
+            throw new UnauthorizedException("공지사항은 관리자만 작성 가능합니다.");
+        }
 
         Post post = Post.builder()
                 .content(request.getContent())
@@ -62,6 +68,34 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public PostResponse getPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        PostResponse response = PostResponse.fromEntity(post);
+
+        // like count (always)
+        Long likeCount = likeRepository.countByPostId(post.getId());
+        response.setLikeCount(likeCount);
+
+        // comment count (always)
+        Long commentCount = commentRepository.countByPostId(post.getId());
+        response.setCommentCount(commentCount);
+
+        // isLiked: try to get current user, but if unauthenticated, treat as not liked
+        try {
+            User currentUser = authenticationService.getCurrentUser();
+            boolean isLiked = likeRepository.existsByUserAndPost(currentUser, post);
+            response.setLiked(isLiked);
+        } catch (RuntimeException ex) {
+            // authenticationService.getCurrentUser() throws ResourceNotFoundException when no auth
+            response.setLiked(false);
+        }
+
+        return response;
+    }
+
+    @Transactional(readOnly = true)
     public Page<PostResponse> getUserPosts(Long userId, Pageable pageable) {
         User currentUser = authenticationService.getCurrentUser();
         Page<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
@@ -90,8 +124,14 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
+        boolean isAdmin = (currentUser.getRole() == Role.ADMIN);
+
         if (!post.getUser().getId().equals(currentUser.getId())) {
             throw new UnauthorizedException("You are not authorized to update this post");
+        }
+
+        if (request.getType() == Type.NOTICE && !isAdmin) {
+            throw new UnauthorizedException("공지사항 유형은 관리자만 설정 가능합니다.");
         }
 
         post.setContent(request.getContent());
@@ -104,14 +144,36 @@ public class PostService {
     }
 
     public void deletePost(Long postId) {
-        User currentUser = authenticationService.getCurrentUser();
+        // 안전하게 현재 사용자 확인 (인증 없으면 Unauthorized 처리)
+        User currentUser;
+        try {
+            currentUser = authenticationService.getCurrentUser();
+        } catch (RuntimeException ex) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
-        if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedException("You are not authorized to update this post");
+        boolean isOwner = post.getUser() != null && post.getUser().getId().equals(currentUser.getId());
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole()); // 프로젝트 Role 필드명에 따라 조정
+
+        if (!isOwner && !isAdmin) {
+            throw new UnauthorizedException("You are not authorized to delete this post");
         }
 
-        postRepository.deleteById(postId);
+        // 관련 좋아요/댓글 먼저 삭제하여 FK 제약 방지
+        try {
+            likeRepository.deleteByPostId(postId);
+        } catch (Exception e) {
+            log.warn("Failed to delete likes for post {}: {}", postId, e.getMessage());
+        }
+        try {
+            commentRepository.deleteByPostId(postId);
+        } catch (Exception e) {
+            log.warn("Failed to delete comments for post {}: {}", postId, e.getMessage());
+        }
+
+        postRepository.delete(post);
     }
 }

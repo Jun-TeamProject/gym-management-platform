@@ -1,13 +1,18 @@
 package com.example.backend.user.controller;
 
+import com.example.backend.payment.dto.PaymentHistoryResponse;
+import com.example.backend.user.dto.AdminMembershipUpdateRequest;
 import com.example.backend.user.dto.RoleChangeRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,6 +28,15 @@ public class AdminController {
     ) {
         UserDto updatedUser = adminService.changUserRole(userId, request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping("/memberships/{membershipId}")
+    public ResponseEntity<Void> updateMembership(
+            @PathVariable Long membershipId,
+            @Valid @RequestBody AdminMembershipUpdateRequest request
+    ){
+        adminService.updateMembership(membershipId, request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/users")
@@ -43,5 +57,15 @@ public class AdminController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         adminService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/payments")
+    public ResponseEntity<List<PaymentHistoryResponse>> getPaymentHistory(
+//            @RequestParam(defaultValue = "DAY") String period
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+            ) {
+        List<PaymentHistoryResponse> history = adminService.getPaymentHistory(startDate, endDate);
+        return ResponseEntity.ok(history);
     }
 }
