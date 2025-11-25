@@ -180,30 +180,31 @@ export default function PostDetailPage() {
                   <div className="hidden md:flex flex-col items-end gap-2">
                     {Number(me.id) ===
                       Number(post.user?.id ?? post.user?.userId) && (
-                      <button
-                        onClick={() => setEditing(post)}
-                        className="px-3 py-1 rounded border text-sm"
-                      >
-                        수정
-                      </button>
-                    )}
+                        <button
+                          onClick={() => setEditing(post)}
+                          className="px-3 py-1 rounded border text-sm"
+                        >
+                          수정
+                        </button>
+                      )}
                     {(Number(me.id) ===
                       Number(post.user?.id ?? post.user?.userId) ||
                       isAdmin) && (
-                      <button
-                        onClick={() => handleDelete(post.id)}
-                        className="px-3 py-1 rounded border text-sm text-red-600"
-                      >
-                        삭제
-                      </button>
-                    )}
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          className="px-3 py-1 rounded border text-sm text-red-600"
+                        >
+                          삭제
+                        </button>
+                      )}
                   </div>
                 )}
               </div>
 
-              <div className="mt-4 text-gray-800 whitespace-pre-wrap leading-relaxed">
-                {post.content}
-              </div>
+              <div
+                className="mt-6 text-gray-800 leading-relaxed min-h-[100px] [&>h1]:text-2xl [&>h1]:font-bold [&>h2]:text-xl [&>h2]:font-bold [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2 [&>img]:max-w-full"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
 
               {post.fileUrl && (
                 <div className="mt-4">
@@ -221,11 +222,10 @@ export default function PostDetailPage() {
               <div className="mt-6 flex items-center justify-center gap-4">
                 <button
                   onClick={() => handleToggleLike(post.id)}
-                  className={`inline-flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium border ${
-                    liked
+                  className={`inline-flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium border ${liked
                       ? "bg-pink-50 border-pink-300 text-pink-600"
                       : "bg-white border-gray-200 text-gray-800"
-                  }`}
+                    }`}
                 >
                   <span className="text-lg">❤️</span>
                   <span className="font-medium">{likeCount}</span>
