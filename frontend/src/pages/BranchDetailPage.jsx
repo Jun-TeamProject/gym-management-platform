@@ -5,7 +5,7 @@ import useAuthStore from "../stores/authStore";
 
 const TrainerCard = ({ trainer }) => {
   const imageUrl = trainer.profileImageUrl
-    ? `http://localhost:8080${trainer.profileImageUrl}`
+    ? `/api/files${trainer.profileImageUrl}`
     : "/images/trainer1.webp";
   // console.log(imageUrl);
   return (
@@ -30,7 +30,7 @@ const FacilityImageGrid = ({ images, isAdmin, onDelete }) => (
       images.map((url, index) => (
         <div key={index} className="relative group">
           <img
-            src={`http://localhost:8080${url}`}
+            src={`/api/files${url}`}
             alt={`시설 이미지 ${index + 1}`}
             className="w-full h-40 object-cover rounded-lg border"
           />
@@ -91,8 +91,8 @@ const BranchDetailPage = () => {
   useEffect(() => {
     if (!branchDetails) return;
     const KAKAO_KEY =
-      (typeof import.meta !== "undefined" &&
-        import.meta.env?.VITE_KAKAO_MAP_KEY) ||
+      import.meta.env?.VITE_KAKAO_MAP_KEY ||
+      import.meta.env?.REACT_APP_KAKAO_API_KEY ||
       process.env.REACT_APP_KAKAO_API_KEY;
     if (!KAKAO_KEY) {
       console.warn("Kakao API key not set");

@@ -24,7 +24,6 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
 
-  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -67,7 +66,7 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
       fetchBranches();
     }
   }, [isEditing]);
-  
+
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
@@ -128,11 +127,14 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
               className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
               onClick={handleImageClick}
             >
-              <img src={imagePreview || "https://i.ibb.co/2YFvCqP/default-profile.png"}
-              alt = "Profile"
-              className="w-full h-full object-cover"
+              <img
+                src={
+                  imagePreview || "https://i.ibb.co/2YFvCqP/default-profile.png"
+                }
+                alt="Profile"
+                className="w-full h-full object-cover"
               />
-              </div>
+            </div>
             <input
               type="file"
               ref={fileInputRef}
@@ -144,7 +146,13 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 프로필 이미지
               </label>
-              <input type="text" name="username" value={formData.username} disabled className={disabledInputClass} />
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                disabled
+                className={disabledInputClass}
+              />
             </div>
           </div>
           <div>
@@ -299,7 +307,9 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border">
             <img
-              src={imagePreview || "https://i.ibb.co/2YFvCqP/default-profile.png"}
+              src={
+                imagePreview || "https://i.ibb.co/2YFvCqP/default-profile.png"
+              }
               alt="Profile"
               className="w-full h-full object-cover"
             />

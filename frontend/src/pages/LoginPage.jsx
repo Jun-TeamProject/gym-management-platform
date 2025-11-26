@@ -31,8 +31,8 @@ export default function LoginPage() {
     }
   };
   const handleSocialLogin = (provider) => {
-    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
-  }
+    window.location.href = `/api/oauth2/authorization/${provider}`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4">
@@ -102,10 +102,11 @@ export default function LoginPage() {
             </button>
           </form>
           <div>
-            <button onClick={() => handleSocialLogin("google")} className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold py-3 transition mt-1">
-              <div>
-                구글로 로그인
-              </div>
+            <button
+              onClick={() => handleSocialLogin("google")}
+              className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold py-3 transition mt-1"
+            >
+              <div>구글로 로그인</div>
             </button>
           </div>
           <div className="my-6 h-px bg-gray-100" />
@@ -130,7 +131,10 @@ export default function LoginPage() {
 
         <p className="text-center text-xs text-gray-500 mt-4">
           계정이 없으신가요?{" "}
-          <Link to="/register" className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline">
+          <Link
+            to="/register"
+            className="text-blue-700 hover:text-blue-900 underline-offset-2 hover:underline"
+          >
             지금 가입하기
           </Link>
         </p>

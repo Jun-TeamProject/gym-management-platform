@@ -18,14 +18,17 @@ export default function MapPage() {
 
   useEffect(() => {
     const KAKAO_KEY =
-      (typeof import.meta !== "undefined" &&
-        import.meta.env?.VITE_KAKAO_MAP_KEY) ||
+      import.meta.env?.VITE_KAKAO_MAP_KEY ||
+      import.meta.env?.REACT_APP_KAKAO_API_KEY ||
       process.env.REACT_APP_KAKAO_API_KEY;
+
     if (!KAKAO_KEY) {
-      console.error("REACT_APP_KAKAO_API_KEY is not set");
+      console.error("KAKAO_KEY is not set in environment variables");
+      alert("카카오 맵 키가 설정되지 않았습니다. 관리자에게 문의하세요.");
       setLoading(false);
       return;
     }
+
     const src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&libraries=services&autoload=false`;
     const existing = document.querySelector("script[data-kakao-sdk]");
 
@@ -37,7 +40,10 @@ export default function MapPage() {
         s.async = true;
         s.setAttribute("data-kakao-sdk", "true");
         s.onload = () => resolve();
-        s.onerror = (e) => reject(e);
+        s.onerror = (e) => {
+          console.error("Kakao Maps script load error:", e);
+          reject(e);
+        };
         document.head.appendChild(s);
       });
 
