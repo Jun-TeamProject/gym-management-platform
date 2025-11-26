@@ -1,6 +1,7 @@
 package com.example.backend.payment.service;
 
 import com.example.backend.global.config.TossPaymentConfig;
+import com.example.backend.membership.dto.MembershipDto;
 import com.example.backend.membership.repository.MembershipRepository;
 import com.example.backend.payment.client.TossPaymentsApiClient;
 import com.example.backend.payment.dto.*;
@@ -14,6 +15,7 @@ import com.example.backend.user.entity.User;
 import com.example.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,5 +148,38 @@ public class PaymentService {
     private String generateOrderId() {
         // 헬스장 프로젝트용 주문번호
         return "GYM_" + UUID.randomUUID().toString().substring(0, 10).toUpperCase();
+    }
+
+    // 관리자 -> 개인별 결제내역 보기
+    @Transactional(readOnly = true)
+    public UserPaymentDetailResponse getUserPaymentDetail(Long userId) {
+        // 유저 기본정보
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        // 활성  이용권
+        List<Membership> activeMemberships = membershipRepository
+                .findByUserIdAndStatus(userId, Membership.MembershipStatus.ACTIVE);
+
+        List<MembershipDto> membershipDtos = activeMemberships.stream()
+                .map(MembershipDto::fromEntity)
+                .toList();
+
+        // 결제 내역
+        List<Payment> payments = paymentRepository
+                .findAllByUserIdAndStatusOrderByApprovedAtDesc(userId, PaymentStatus.DONE);
+
+        List<PaymentHistoryResponse> paymentDtos = payments.stream()
+                .map(PaymentHistoryResponse::fromEntity)
+                .toList();
+
+        return UserPaymentDetailResponse.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .activeMemberships(membershipDtos)
+                .payments(paymentDtos)
+                .build();
     }
 }

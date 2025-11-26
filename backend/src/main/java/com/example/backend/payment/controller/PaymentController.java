@@ -89,4 +89,13 @@ public class PaymentController {
         List<PaymentHistoryResponse> paymentHistory = paymentService.getMyPayments(currentUser.getId());
         return ResponseEntity.ok(paymentHistory);
     }
+
+    @GetMapping("/admin/user/{userId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<PaymentHistoryResponse>> getUserPaymentsByAdmin(
+            @PathVariable Long userId
+    ) {
+        List<PaymentHistoryResponse> paymentHistory = paymentService.getMyPayments(userId);
+        return ResponseEntity.ok(paymentHistory);
+    }
 }
