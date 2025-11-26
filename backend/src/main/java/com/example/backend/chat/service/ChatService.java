@@ -93,7 +93,7 @@ public class ChatService {
         NotificationResponse response = NotificationResponse.fromEntity(savedNotification);
         sseEmitterService.sendToUser(recipientId, response);
 
-        if(chatmessage.getSenderId()!=1){//어드민이 보낸건 unreadcount update 안함
+        if(!chatmessage.getSenderId().equals(chatRoom.getAdminId())){//어드민이 보낸건 unreadcount update 안함
             int unreadCount = chatMessageRepository.countUnreadMessagesByRoomId(chatRoom.getId(),chatmessage.getSenderId());
             chatRoom.setUnreadCount(unreadCount);
         }
