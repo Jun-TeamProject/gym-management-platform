@@ -61,13 +61,14 @@ public class SecurityConfig {
                                         "/login/oauth2/**",
                                         "/h2-console/**",
                                         "/api/branches",
+                                        "/api/branches/**",
                                         "/api/products",
                                         "/error",
                                         "/images/**",
                                         "/images-init/**",
                                         "/ws/**"
                                 ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/branches").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/branches", "/api/branches/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/branches").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/branches/**").hasAuthority("ADMIN")
