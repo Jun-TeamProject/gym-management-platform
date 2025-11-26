@@ -12,7 +12,7 @@ const chatService = {
     },
     async getAllChatRoom() {
         try{
-            const response = await api.get(`api/chatroom`);
+            const response = await api.get(`/api/chatroom`);
             console.log(response.data[0]);
             return response.data;
         }catch (error){
@@ -23,7 +23,7 @@ const chatService = {
     async updateUnread(roomId,userId) {
         try{
             console.log(roomId,userId);
-            await api.put(`api/chat/update/${roomId}`,null,{
+            await api.put(`/api/chat/update/${roomId}`,null,{
                 params : {
                     userId: userId
                 },
