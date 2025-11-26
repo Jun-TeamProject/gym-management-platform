@@ -48,7 +48,7 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
         branchId: profileData.branchId || "",
       });
       if (profileData.profileImageUrl) {
-        setImagePreview(`http://localhost:8080${profileData.profileImageUrl}`);
+        setImagePreview(`/api/files${profileData.profileImageUrl}`);
       }
     }
   }, [profileData]);
@@ -78,7 +78,7 @@ const ProfileForm = ({ profileData, onProfileUpdate }) => {
     try {
       const updatedUser = await profileService.uploadAvatar(file);
 
-      setImagePreview(`http://localhost:8080${updatedUser.profileImageUrl}`);
+      setImagePreview(`/api/files${updatedUser.profileImageUrl}`);
       onProfileUpdate(updatedUser);
       alert("프로필 이미지가 업데이트되었습니다.");
     } catch (error) {
