@@ -64,6 +64,8 @@ public class SecurityConfig {
                                         "/api/branches/**",
                                         "/api/products",
                                         "/error",
+                                        "/api/files/images-init/**",
+                                        "/api/files/images/**",
                                         "/images/**",
                                         "/images-init/**",
                                         "/ws/**"
