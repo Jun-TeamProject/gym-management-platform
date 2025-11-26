@@ -3,35 +3,51 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import chatService from "../services/chat";
 import authService from "../services/auth";
-const ADMIN_ID = 1;
+import userService from "../services/user";
 
 const UserChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const [adminId, setAdminId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const stompClient = useRef(null);
   const subscriptions = useRef({});
   const messagesEndRef = useRef(null);
 
   const currentUserId = authService.getCurrentUser()?.id;
-  const roomId = `${currentUserId}${ADMIN_ID}`;
 
-  const fetchInitialMessages = useCallback(
-    async (roomId) => {
+  const fetchInitialMessages = useCallback(async (targetRoomId, targetAdminId) => {
       try {
-        await chatService.updateUnread(roomId, ADMIN_ID);
-        const history = await chatService.getChatHistory(roomId);
+        await chatService.updateUnread(targetRoomId, targetAdminId);
+        const history = await chatService.getChatHistory(targetRoomId);
         console.log(history);
         setMessages(history);
       } catch (error) {
         console.error(error);
       }
     },
-    [chatService]
+    []
   );
 
   useEffect(() => {
+    const loadAdminId = async () => {
+      const fetchedId = await userService.getAdminId();
+      if (fetchedId) {
+        setAdminId(fetchedId);
+      } else {
+        alert("채팅 가능한 관리자가 없습니다.");
+      }
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!adminId || !currentUserId) return;
+
+    const roomId = `${currentUserId}${adminId}`;
+
     const socket = new SockJS("/api/ws");
     stompClient.current = Stomp.over(socket);
 
@@ -52,7 +68,7 @@ const UserChatPage = () => {
           subscriptions.current[roomId] = sub;
         }
 
-        fetchInitialMessages(roomId);
+        fetchInitialMessages(roomId, adminId);
       },
       (error) => {
         console.error("Connection error: ", error);
@@ -82,19 +98,21 @@ const UserChatPage = () => {
         console.warn("WebSocket cleanup error:", err);
       }
     };
-  }, [roomId, fetchInitialMessages]);
+  }, [adminId, currentUserId, fetchInitialMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim() || !isConnected) return;
+    if (!inputMessage.trim() || !isConnected || !adminId) return;
+
+    const roomId = `${currentUserId}${adminId}`;
 
     const messageToSend = {
       roomId: roomId,
       userId: currentUserId,
-      adminId: ADMIN_ID,
+      adminId: adminId,
       senderId: currentUserId,
       content: inputMessage.trim(),
       sentAt: new Date().toISOString(),
