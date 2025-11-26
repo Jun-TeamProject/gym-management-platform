@@ -24,6 +24,10 @@ export const AdminApi = {
     return api.get(`/api/admin/users/${userId}`);
   },
 
+  getUserPayments: (userId) => {
+    return api.get(`api/payments/admin/user/${userId}`);
+  },
+
   updateMembership: async (MembershipId, updateData) => {
     return api.put(`/api/admin/memberships/${MembershipId}`, updateData);
   }
