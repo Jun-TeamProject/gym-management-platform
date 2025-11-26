@@ -68,7 +68,7 @@ public class SecurityConfig {
                                         "/api/files/images/**",
                                         "/images/**",
                                         "/images-init/**",
-                                        "/ws/**"
+                                        "/api/ws/**"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/branches", "/api/branches/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
