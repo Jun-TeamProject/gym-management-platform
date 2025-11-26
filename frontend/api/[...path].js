@@ -1,24 +1,21 @@
 export default async function handler(req, res) {
   const BACKEND = process.env.BACKEND_URL;
-  if (!BACKEND)
+  if (!BACKEND) {
     return res.status(500).json({ error: "BACKEND_URL not configured" });
+  }
 
-  // query string (전체)
-  const queryString = req.url.split("?")[1] || "";
+  // req.url 예: '/api/branches?page=1' 또는 '/api/auth/login'
+  const [pathWithApi, queryString] = req.url.split("?");
 
-  // 안전하게 path 추출: /api/ 뒤를 그대로 backend로 전달
-  // 예: req.url = '/api/branches?page=1' -> pathOnly = 'branches'
-  let pathOnly = req.url.replace(/^\/api\/?/, "").split("?")[0];
-  // strip any leading slash
-  pathOnly = pathOnly.replace(/^\/+/, "");
+  // '/api/' 제거하고 백엔드에 전달
+  const pathOnly = pathWithApi.replace(/^\/api\/?/, "");
 
   const target = `${BACKEND}/${pathOnly}${
     queryString ? `?${queryString}` : ""
   }`;
 
   console.log(`[Proxy] ${req.method} -> ${target}`);
-  // 로깅: 요청 헤더(디버그용; 토큰 노출 주의)
-  console.log("[Proxy] Incoming headers:", req.headers);
+  console.log(`[Proxy] Authorization: ${req.headers.authorization || "NONE"}`);
 
   const headers = { ...req.headers };
   delete headers.host;
@@ -48,7 +45,6 @@ export default async function handler(req, res) {
     console.log(`[Proxy] Response status: ${response.status}`);
     res.status(response.status);
 
-    // SSE/streaming 처리 필요시 별도 분기(생략)
     response.headers.forEach((v, k) => {
       if (
         !["transfer-encoding", "connection", "content-encoding"].includes(k)
