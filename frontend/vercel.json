@@ -3,6 +3,14 @@
     {
       "source": "/api/:path*",
       "destination": "http://3.34.5.55:8080/api/:path*"
+    },
+    {
+      "source": "/images/:path*",
+      "destination": "http://3.34.5.55:8080/images/:path*"
+    },
+    {
+      "source": "/images-init/:path*",
+      "destination": "http://3.34.5.55:8080/images-init/:path*"
     }
   ]
 }
