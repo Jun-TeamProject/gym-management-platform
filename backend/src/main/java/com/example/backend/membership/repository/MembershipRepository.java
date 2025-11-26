@@ -20,7 +20,16 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
             @Param("userId") Long userId,
             @Param("productType") ProductType productType
     );
+    
+    @Query("""
+            SELECT m FROM Membership m
+            JOIN FETCH m.product
+            WHERE m.user.id = :userId
+            """
+            )
+    List<Membership> findAllByUserIdWithProduct(@Param("userId") Long userId);
 
     List<Membership> findByEndDateAndStatus(LocalDate endDate, Membership.MembershipStatus status);
     List<Membership> findByPtCountRemainingAndStatus(int count, Membership.MembershipStatus status);
+    List<Membership> findByUserIdAndStatus(Long userId, Membership.MembershipStatus status);
 }
