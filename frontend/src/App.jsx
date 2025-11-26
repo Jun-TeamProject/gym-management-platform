@@ -26,6 +26,7 @@ import BranchDetailPage from "./pages/BranchDetailPage";
 import UserChatPage from "./pages/UserChatPage";
 import AdminChatPage from "./pages/AdminChatPage";
 import NotificationPage from "./pages/NotificationPage";
+import UserPaymentDetailPage from "./pages/UserPaymentDetailPage";
 
 const App = () => {
   return (
