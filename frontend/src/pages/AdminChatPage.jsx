@@ -22,7 +22,7 @@ const AdminChatPage = () => {
 
   // const role = authService.getRole();
   // const adminId = getCurrentAdminId();
-  const adminId = 1;
+  const adminId = 4;
   const WEBSOCKET_ENDPOINT = "/api/ws";
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import chatService from "../services/chat";
 import authService from "../services/auth";
-const ADMIN_ID = 1;
+const ADMIN_ID = 4;
 
 const UserChatPage = () => {
   const [messages, setMessages] = useState([]);
