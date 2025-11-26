@@ -3,9 +3,6 @@ package com.example.backend.user.controller;
 import com.example.backend.user.dto.ProfileUpdateRequest;
 import com.example.backend.user.dto.UserDto;
 import com.example.backend.user.dto.WithdrawRequest;
-import com.example.backend.user.entity.Role;
-import com.example.backend.user.entity.User;
-import com.example.backend.user.repository.UserRepository;
 import com.example.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,6 @@ import java.util.List;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
@@ -70,15 +66,5 @@ public class UserController {
 
         userService.withdraw(userDetails, password);
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
-    }
-
-    @GetMapping("/adminId")
-    public ResponseEntity<Long> getAdminId() {
-        User admin = userRepository.findAllByRole(Role.ADMIN)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("관리자 계정이 존재하지 않습니다."));
-
-        return ResponseEntity.ok(admin.getId());
     }
 }

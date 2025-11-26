@@ -27,15 +27,5 @@ const userService = {
     async changeRole(userId,data){
         const response = await api.put(`/api/admin/users/${userId}/role`,data);
     },
-
-    async getAdminId() {
-        try {
-            const response = await api.get('/api/users/adminId');
-            return response.data;
-        } catch (error) {
-            console.error("관리자 ID 로딩 실패:", error);
-            return null;
-        }
-    },
 };
 export default userService;

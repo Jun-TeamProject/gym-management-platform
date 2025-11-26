@@ -22,15 +22,10 @@ const AdminChatPage = () => {
 
   // const role = authService.getRole();
   // const adminId = getCurrentAdminId();
-  const adminId = authService.getCurrentUser()?.id;
+  const adminId = 1;
   const WEBSOCKET_ENDPOINT = "/api/ws";
 
   useEffect(() => {
-    if (!adminId) {
-      console.error("관리자 정보를 찾을 수 없습니다.");
-      return;
-    }
-
     const socket = new SockJS(WEBSOCKET_ENDPOINT);
     stompClient.current = Stomp.over(socket);
 
@@ -54,7 +49,7 @@ const AdminChatPage = () => {
         stompClient.current.disconnect(() => console.log("Disconnected"));
       }
     };
-  }, [adminId]);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -114,7 +109,7 @@ const AdminChatPage = () => {
   };
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim() || !isConnected || !selectedRoom || !adminId) return;
+    if (!inputMessage.trim() || !isConnected || !selectedRoom) return;
 
     const messageToSend = {
       roomId: selectedRoom.id.toString(),
@@ -153,10 +148,11 @@ const AdminChatPage = () => {
                 key={room.id}
                 onClick={() => handleRoomSelect(room)}
                 className={`p-4 cursor-pointer hover:bg-indigo-50 transition duration-150 
-                                            ${selectedRoom?.id === room.id
-                    ? "bg-indigo-100 border-l-4 border-indigo-600"
-                    : ""
-                  }`}
+                                            ${
+                                              selectedRoom?.id === room.id
+                                                ? "bg-indigo-100 border-l-4 border-indigo-600"
+                                                : ""
+                                            }`}
               >
                 <div className="flex justify-between items-center">
                   <div className="font-bold text-gray-800">{room.username}</div>
@@ -241,10 +237,11 @@ const AdminChatPage = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={!isConnected}
-                  className={`ml-2 rounded-xl text-white px-4 py-1 flex-shrink-0 transition duration-300 ${isConnected
+                  className={`ml-2 rounded-xl text-white px-4 py-1 flex-shrink-0 transition duration-300 ${
+                    isConnected
                       ? "bg-indigo-500 hover:bg-indigo-600"
                       : "bg-gray-400 cursor-not-allowed"
-                    }`}
+                  }`}
                 >
                   전송
                 </button>
