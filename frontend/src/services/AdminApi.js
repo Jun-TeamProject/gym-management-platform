@@ -14,9 +14,9 @@ export const AdminApi = {
     return api.delete(`/api/admin/users/${userId}`);
   },
 
-  getPaymentHistory: async (period) => {
+  getPaymentHistory: async (startDate, endDate) => {
     return api.get("/api/admin/payments", {
-      params: { period },
+      params: { startDate, endDate },
     });
   },
 

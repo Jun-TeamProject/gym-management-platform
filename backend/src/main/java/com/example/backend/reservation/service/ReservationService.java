@@ -59,6 +59,15 @@ public class ReservationService {
             throw new UnauthorizedException("Only members can create reservations");
         }
 
+        Membership ptMembership = membershipRepository.findActiveMembershipByUserIdAndType(
+                currentUser.getId(),
+                Product.ProductType.PT
+        ).orElseThrow(() -> new IllegalArgumentException("사용 가능한 PT 이용권이 없습니다. 이용권을 먼저 구매해주세요."));
+
+        if (ptMembership.getPtCountRemaining() <= 0) {
+            throw new IllegalArgumentException("남은 PT 이용권이 없습니다. 추가 결제가 필요합니다.");
+        }
+
         LocalDateTime startTime = request.getStartTime();
         LocalDateTime endTime = request.getEndTime();
 

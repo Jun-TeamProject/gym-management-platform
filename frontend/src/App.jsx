@@ -27,6 +27,10 @@ import UserChatPage from "./pages/UserChatPage";
 import AdminChatPage from "./pages/AdminChatPage";
 import NotificationPage from "./pages/NotificationPage";
 import UserPaymentDetailPage from "./pages/UserPaymentDetailPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import Map from "./pages/MapPage";
+import MapPage from "./pages/MapPage";
 
 const App = () => {
   return (
@@ -38,11 +42,11 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/oauth2/callback" element={<OAuthRedirectHandler />} />
 
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+
           <Route path="/branches" element={<BranchListPage />} />
           <Route path="/branches/:id" element={<BranchDetailPage />} />
-          <Route path="/community" element={<PostsPage />} />
-          <Route path="/posts" element={<PostsPage />} />
-          <Route path="/posts/:id" element={<PostDetailPage />} />
 
           <Route
             element={
@@ -54,6 +58,10 @@ const App = () => {
             <Route path="/attendances" element={<Calendar />} />
             <Route path="/reservations" element={<ReservationPage />} />
             <Route path="/notifications" element={<NotificationPage />} />
+            <Route path="/community" element={<PostsPage />} />
+            <Route path="/posts" element={<PostsPage />} />
+            <Route path="/posts/:id" element={<PostDetailPage />} />
+            <Route path="/map" element={<MapPage />} />
           </Route>
 
           {/*결제 관련 라우트 (MEMBER전용) //Todo: payment Fail Page 추가*/}

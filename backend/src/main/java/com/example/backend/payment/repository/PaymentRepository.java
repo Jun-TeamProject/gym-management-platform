@@ -13,11 +13,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByPaymentKey(String paymentKey);
 
-    //    List<Payment> findAllByUserIdOrderByApprovedAtDesc(Long userId);
+    List<Payment> findAllByUserIdOrderByApprovedAtDesc(Long userId);
     List<Payment> findAllByUserIdAndStatusOrderByApprovedAtDesc(Long userId, PaymentStatus status);
 
     List<Payment> findAllByStatusAndApprovedAtAfterOrderByApprovedAtDesc(
             PaymentStatus status,
             LocalDateTime afterDate
     );
+
+    List<Payment> findAllByStatusAndApprovedAtBetweenOrderByApprovedAtDesc(
+            PaymentStatus status,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
+
+    long countByStatus(PaymentStatus status);
 }
