@@ -11,6 +11,10 @@
     {
       "source": "/images-init/:path*",
       "destination": "http://3.34.5.55:8080/images-init/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
