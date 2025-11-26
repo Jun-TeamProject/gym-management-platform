@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   const [pathWithApi, queryString] = req.url.split("?");
 
   // '/api/' 제거하고 백엔드에 전달
-  const pathOnly = pathWithApi.replace(/^\/api\/?/, "");
+  // const pathOnly = pathWithApi.replace(/^\/api\/?/, "");
+  const pathOnly = pathWithApi;
 
   const target = `${BACKEND}/${pathOnly}${
     queryString ? `?${queryString}` : ""
