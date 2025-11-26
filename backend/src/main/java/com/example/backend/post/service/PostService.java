@@ -5,6 +5,8 @@ import com.example.backend.comment.repository.CommentRepository;
 import com.example.backend.post.dto.PostResponse;
 import com.example.backend.post.dto.PostRequest;
 import com.example.backend.post.entity.Post;
+import com.example.backend.post.entity.Type;
+import com.example.backend.user.entity.Role;
 import com.example.backend.user.entity.User;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.exception.UnauthorizedException;
@@ -30,6 +32,10 @@ public class PostService {
 
     public PostResponse createPost(PostRequest request) {
         User currentUser = authenticationService.getCurrentUser();
+
+        if (request.getType() == Type.NOTICE && currentUser.getRole() != Role.ADMIN) {
+            throw new UnauthorizedException("공지사항은 관리자만 작성 가능합니다.");
+        }
 
         Post post = Post.builder()
                 .content(request.getContent())
@@ -118,8 +124,14 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
+        boolean isAdmin = (currentUser.getRole() == Role.ADMIN);
+
         if (!post.getUser().getId().equals(currentUser.getId())) {
             throw new UnauthorizedException("You are not authorized to update this post");
+        }
+
+        if (request.getType() == Type.NOTICE && !isAdmin) {
+            throw new UnauthorizedException("공지사항 유형은 관리자만 설정 가능합니다.");
         }
 
         post.setContent(request.getContent());

@@ -2,9 +2,11 @@ package com.example.backend.user.controller;
 
 import com.example.backend.user.dto.ProfileUpdateRequest;
 import com.example.backend.user.dto.UserDto;
+import com.example.backend.user.dto.WithdrawRequest;
 import com.example.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -39,8 +42,8 @@ public class UserController {
     @PutMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserDto> updateMyProfileImage(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("image")MultipartFile file
-            ) throws IOException {
+            @RequestParam("image") MultipartFile file
+    ) throws IOException {
         UserDto updatedUser = userService.updateMyProfileImage(userDetails, file);
         return ResponseEntity.ok(updatedUser);
     }
@@ -49,5 +52,19 @@ public class UserController {
     public ResponseEntity<List<UserDto>> getTrainersList() {
         List<UserDto> trainers = userService.getTrainers();
         return ResponseEntity.ok(trainers);
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody(required = false) WithdrawRequest request
+    ) {
+        log.info("탈퇴 요청 사용자: {}", userDetails.getUsername());
+
+        // 소셜 로그인 유저는 비밀번호가 null일 수 있음
+        String password = (request != null) ? request.getPassword() : null;
+
+        userService.withdraw(userDetails, password);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 }
