@@ -57,7 +57,7 @@ public class SecurityConfig {
                                         "/api/auth/**",
                                         "/api/images/**",
                                         "/api/dailyLog/**",
-                                        "/oauth2/**",
+                                        "/api/oauth2/**",
                                         "/login/oauth2/**",
                                         "/h2-console/**",
                                         "/api/branches",
