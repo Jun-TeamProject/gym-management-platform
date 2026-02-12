@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis:8-alpine
+    image: redis:7-alpine
     container_name: gym-redis
     ports:
       - "6379:6379"
@@ -9,5 +9,29 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes
 
+  db:
+    image: postgres:15-alpine
+    container_name: gym-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: gym_db
+      POSTGRES_USER: sjlee  # 승준이 아이디
+      POSTGRES_PASSWORD: sjlee # 꼭 바꿔줘!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: gym-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com # 로그인용 이메일
+      PGADMIN_DEFAULT_PASSWORD: admin # 로그인용 비밀번호
+    ports:
+      - "5050:80" #서버IP:5050으로 접속
+
 volumes:
   redis-data:
+  postgres-data:

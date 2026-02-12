@@ -41,7 +41,10 @@ dependencies {
 
 	// AWS S3
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.565'
-
+    // JAXB API (jakarta)
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+    // JAXB Runtime (구현체)
+    runtimeOnly 'com.sun.xml.bind:jaxb-impl:4.0.3'
 	// Image Processing
 	implementation 'net.coobird:thumbnailator:0.4.19'
 
