@@ -22,15 +22,33 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: gym-pgadmin
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: gym-pgadmin
+#    restart: always
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@admin.com # 로그인용 이메일
+#      PGADMIN_DEFAULT_PASSWORD: admin # 로그인용 비밀번호
+#    ports:
+#      - "5050:80" #서버IP:5050으로 접속
+  backend:
+    build: .
+    container_name: gym-backend
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com # 로그인용 이메일
-      PGADMIN_DEFAULT_PASSWORD: admin # 로그인용 비밀번호
     ports:
-      - "5050:80" #서버IP:5050으로 접속
+      - "8080:8080"
+    env_file:
+      - .env
+#    environment:
+#      DB_HOST: db
+#      DB_PORT: 5432
+#      DB_NAME: gym_db
+#      DB_USERNAME: ${DB_USERNAME}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      REDIS_HOST: redis
+    depends_on:
+      - db
+      - redis
 
 volumes:
   redis-data:
