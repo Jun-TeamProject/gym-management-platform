@@ -5,10 +5,6 @@
       "destination": "http://gym-sj.duckdns.org:8080/api/:path*"
     },
     {
-      "source": "/:path*",
-      "destination": "http://gym-sj.duckdns.org:8080/:path*"
-    },
-    {
       "source": "/images/:path*",
       "destination": "http://3.34.5.55:8080/images/:path*"
     },

@@ -31,7 +31,7 @@ export default function LoginPage() {
     }
   };
   const handleSocialLogin = (provider) => {
-    window.location.href = `/oauth2/authorization/${provider}`;
+    window.location.href = `http://gym-sj.duckdns.org:8080/oauth2/authorization/${provider}`;
   };
 
   return (
